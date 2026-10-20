@@ -227,7 +227,7 @@ export const BudgetsView: React.FC = () => {
   return (
     <div className="space-y-4 px-4 py-3 max-w-md mx-auto">
       {/* Segmented Section Picker */}
-      <div className="grid grid-cols-4 gap-1 bg-neutral-900 p-1 rounded-2xl border border-neutral-800">
+      <div className="grid grid-cols-4 gap-1 bg-white/[0.04] p-1 rounded-2xl border border-white/[0.08]">
         {[
           { id: 'budget', label: 'Budget', icon: PieChart },
           { id: 'goals', label: 'Goals', icon: PiggyBank },
@@ -241,9 +241,9 @@ export const BudgetsView: React.FC = () => {
               key={sec.id}
               type="button"
               onClick={() => setActiveSection(sec.id as any)}
-              className={`flex flex-col items-center justify-center py-2 rounded-xl text-xs font-bold transition-all ${
+              className={`flex flex-col items-center justify-center py-2 rounded-xl text-xs font-medium transition-all ${
                 isActive
-                  ? 'bg-neutral-800 text-white shadow-sm ring-1 ring-neutral-700'
+                  ? 'bg-white/[0.14] text-white shadow-sm ring-1 ring-white/10 font-semibold'
                   : 'text-neutral-400 hover:text-neutral-200'
               }`}
             >
@@ -258,15 +258,15 @@ export const BudgetsView: React.FC = () => {
       {activeSection === 'budget' && (
         <div className="space-y-4 animate-in fade-in duration-150">
           {/* Planning Workflow Summary */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-lg">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+          <div className="bg-[#121214] border border-white/[0.08] rounded-3xl p-5 shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+            <div className="flex items-center justify-between mb-3.5">
+              <h3 className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
                 Monthly Spending Allowance
               </h3>
               <button
                 type="button"
                 onClick={() => setIsEditBudgetOpen(true)}
-                className="text-xs font-bold text-emerald-400 hover:underline"
+                className="text-xs font-medium text-neutral-300 hover:text-white transition-colors"
               >
                 Configure Budget
               </button>
@@ -274,20 +274,20 @@ export const BudgetsView: React.FC = () => {
 
             <div className="flex items-baseline justify-between mb-2">
               <div>
-                <span className="text-2xl sm:text-3xl font-extrabold text-white tabular-nums">
+                <span className="text-2xl sm:text-3xl font-extrabold text-white tabular-nums tracking-tight">
                   {formatINR(financialSummary.remainingMonthlyBudgetPaise)}
                 </span>
-                <span className="text-xs font-medium text-neutral-400 ml-1.5">
+                <span className="text-xs font-normal text-neutral-400 ml-1.5">
                   remaining of {formatINR(currentBudget?.overallLimitPaise || 0)}
                 </span>
               </div>
               <span
-                className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${
                   financialSummary.budgetUtilizationPercentage > 85
-                    ? 'bg-rose-500/20 text-rose-400'
+                    ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
                     : financialSummary.budgetUtilizationPercentage > 70
-                    ? 'bg-amber-500/20 text-amber-400'
-                    : 'bg-emerald-500/20 text-emerald-400'
+                    ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                    : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
                 }`}
               >
                 {financialSummary.budgetUtilizationPercentage}% spent
@@ -300,7 +300,7 @@ export const BudgetsView: React.FC = () => {
                 <div className="mt-3 p-3 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-start gap-2.5 text-xs text-rose-300">
                   <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
                   <div>
-                    <strong className="block font-bold">Budget Shortfall Warning</strong>
+                    <strong className="block font-semibold">Budget Shortfall Warning</strong>
                     Your planned budget ({formatINR(currentBudget.overallLimitPaise)}) exceeds your
                     confirmed cash balance ({formatINR(financialSummary.actualTotalBalancePaise)})
                     by{' '}
@@ -314,34 +314,34 @@ export const BudgetsView: React.FC = () => {
           </div>
 
           {/* Category Budget Breakdown */}
-          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-lg space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+          <div className="bg-[#121214] border border-white/[0.08] rounded-3xl p-5 shadow-[0_4px_24px_rgba(0,0,0,0.4)] space-y-3">
+            <h4 className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
               Category Limits & Spending
             </h4>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {categories
                 .filter((c) => c.type === 'expense')
                 .map((cat) => {
                   const limit = currentBudget?.categoryLimits?.[cat.id] || cat.monthlyLimitPaise || 0;
                   return (
-                    <div key={cat.id} className="p-3 bg-neutral-950/70 border border-neutral-800/80 rounded-2xl">
-                      <div className="flex items-center justify-between mb-1.5">
-                        <div className="flex items-center space-x-2">
+                    <div key={cat.id} className="p-3 bg-black/50 border border-white/[0.05] rounded-2xl hover:border-white/[0.09] transition-colors">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2.5">
                           <div
-                            className="w-6 h-6 rounded-lg flex items-center justify-center text-white"
-                            style={{ backgroundColor: `${cat.color}25`, color: cat.color }}
+                            className="w-7 h-7 rounded-lg flex items-center justify-center text-white"
+                            style={{ backgroundColor: `${cat.color}20`, color: cat.color }}
                           >
                             <CategoryIcon name={cat.icon} size={14} />
                           </div>
-                          <span className="text-xs font-bold text-white">{cat.name}</span>
+                          <span className="text-[13px] font-medium text-white tracking-tight">{cat.name}</span>
                         </div>
                         {limit > 0 ? (
                           <span className="text-xs font-semibold text-neutral-300 tabular-nums">
                             Limit: {formatINR(limit)}
                           </span>
                         ) : (
-                          <span className="text-[10px] text-neutral-500">No limit</span>
+                          <span className="text-[11px] text-neutral-500">No limit</span>
                         )}
                       </div>
                     </div>
@@ -356,13 +356,13 @@ export const BudgetsView: React.FC = () => {
       {activeSection === 'goals' && (
         <div className="space-y-3 animate-in fade-in duration-150">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
               Savings & Emergency Funds
             </h3>
             <button
               type="button"
               onClick={() => setIsGoalModalOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-emerald-500 text-neutral-950 font-bold text-xs flex items-center gap-1 shadow-sm"
+              className="px-3 py-1.5 rounded-xl bg-white text-black font-semibold text-xs flex items-center gap-1 active:scale-95 transition-all shadow-sm"
             >
               <Plus className="w-3.5 h-3.5" />
               New Goal
@@ -379,36 +379,36 @@ export const BudgetsView: React.FC = () => {
               return (
                 <div
                   key={goal.id}
-                  className="bg-neutral-900 border border-neutral-800 rounded-3xl p-4 shadow-md space-y-3"
+                  className="bg-[#121214] border border-white/[0.08] rounded-3xl p-4 shadow-[0_4px_24px_rgba(0,0,0,0.4)] space-y-3"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2.5">
                       <div
                         className="w-9 h-9 rounded-xl flex items-center justify-center text-white"
-                        style={{ backgroundColor: `${goal.color}25`, color: goal.color }}
+                        style={{ backgroundColor: `${goal.color}20`, color: goal.color }}
                       >
                         <CategoryIcon name={goal.icon} size={18} />
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold text-white">{goal.name}</h4>
-                        <div className="text-[10px] text-neutral-400">
-                          Priority: <span className="capitalize text-emerald-400">{goal.priority}</span>
+                        <h4 className="text-[13px] font-medium text-white tracking-tight">{goal.name}</h4>
+                        <div className="text-[11px] text-neutral-500">
+                          Priority: <span className="capitalize text-neutral-300">{goal.priority}</span>
                           {goal.targetDate && ` • Target: ${goal.targetDate}`}
                         </div>
                       </div>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-sm font-extrabold text-emerald-400 tabular-nums">
+                      <span className="text-sm font-semibold text-emerald-400 tabular-nums">
                         {pct}%
                       </span>
                     </div>
                   </div>
 
                   {/* Progress bar */}
-                  <div className="w-full h-2.5 bg-neutral-950 rounded-full overflow-hidden border border-neutral-800">
+                  <div className="w-full h-1.5 bg-white/[0.08] rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300"
+                      className="h-full bg-emerald-400 rounded-full transition-all duration-300"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -416,27 +416,27 @@ export const BudgetsView: React.FC = () => {
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-neutral-400">
                       Saved:{' '}
-                      <strong className="text-white tabular-nums">
+                      <strong className="text-white font-semibold tabular-nums">
                         {formatINR(goal.currentAmountPaise)}
                       </strong>
                     </span>
                     <span className="text-neutral-400">
                       Target:{' '}
-                      <strong className="text-neutral-200 tabular-nums">
+                      <strong className="text-neutral-300 font-semibold tabular-nums">
                         {formatINR(goal.targetAmountPaise)}
                       </strong>
                     </span>
                   </div>
 
                   {/* Allocate / Withdraw Action */}
-                  <div className="pt-2 border-t border-neutral-800/70 flex gap-2">
+                  <div className="pt-2 border-t border-white/[0.06] flex gap-2">
                     <button
                       type="button"
                       onClick={() => {
                         setAllocatingGoalId(goal.id);
                         setAllocType('deposit');
                       }}
-                      className="flex-1 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 font-bold text-xs transition-all"
+                      className="flex-1 py-1.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-white font-medium text-xs active:scale-95 transition-all"
                     >
                       + Allocate Cash
                     </button>
@@ -446,7 +446,7 @@ export const BudgetsView: React.FC = () => {
                         setAllocatingGoalId(goal.id);
                         setAllocType('withdrawal');
                       }}
-                      className="flex-1 py-1.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 font-semibold text-xs transition-all"
+                      className="flex-1 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-neutral-300 font-medium text-xs active:scale-95 transition-all"
                     >
                       Withdraw
                     </button>
@@ -462,22 +462,22 @@ export const BudgetsView: React.FC = () => {
       {activeSection === 'debts' && (
         <div className="space-y-3 animate-in fade-in duration-150">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
               Debts & Repayments
             </h3>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setIsSplitBillOpen(true)}
-                className="px-3 py-1.5 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600/30 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+                className="px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-neutral-300 hover:text-white hover:bg-white/[0.08] font-medium text-xs flex items-center gap-1.5 active:scale-95 shadow-sm transition-all"
               >
-                <Users className="w-3.5 h-3.5" />
+                <Users className="w-3.5 h-3.5 text-neutral-300" />
                 Split Bill
               </button>
               <button
                 type="button"
                 onClick={() => setIsAddDebtOpen(true)}
-                className="px-3 py-1.5 rounded-xl bg-blue-500 text-white font-bold text-xs flex items-center gap-1 shadow-sm"
+                className="px-3 py-1.5 rounded-xl bg-white text-black font-semibold text-xs flex items-center gap-1 active:scale-95 shadow-sm transition-all"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Add Debt
@@ -489,40 +489,40 @@ export const BudgetsView: React.FC = () => {
             {debts.map((debt) => (
               <div
                 key={debt.id}
-                className="bg-neutral-900 border border-neutral-800 rounded-3xl p-4 shadow-md space-y-3"
+                className="bg-[#121214] border border-white/[0.08] rounded-3xl p-4 shadow-[0_4px_24px_rgba(0,0,0,0.4)] space-y-3"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold text-white">{debt.name}</h4>
-                    <span className="text-[10px] text-neutral-400">
+                    <h4 className="text-[13px] font-medium text-white tracking-tight">{debt.name}</h4>
+                    <span className="text-[11px] text-neutral-500">
                       Lender: {debt.lender} {debt.dueDate && `• Due: ${debt.dueDate}`}
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-xs font-extrabold text-rose-400 tabular-nums block">
+                    <span className="text-xs font-semibold text-rose-400 tabular-nums block">
                       {formatINR(debt.currentBalancePaise)}
                     </span>
-                    <span className="text-[10px] text-neutral-500">
+                    <span className="text-[10px] text-neutral-500 tabular-nums">
                       Orig: {formatINR(debt.originalAmountPaise)}
                     </span>
                   </div>
                 </div>
 
                 {debt.payments && debt.payments.length > 0 && (
-                  <div className="p-2 rounded-xl bg-neutral-950 text-[10px] text-neutral-400">
+                  <div className="p-2 rounded-xl bg-black/50 border border-white/[0.05] text-[11px] text-neutral-400">
                     Latest Payment: {formatINR(debt.payments[debt.payments.length - 1].amountPaise)} on{' '}
                     {debt.payments[debt.payments.length - 1].date.slice(0, 10)}
                   </div>
                 )}
 
-                <div className="pt-2 border-t border-neutral-800/70">
+                <div className="pt-2 border-t border-white/[0.06]">
                   <button
                     type="button"
                     onClick={() => {
                       setPayingDebtId(debt.id);
                       setDebtPayAmountStr((debt.currentBalancePaise / 100).toString());
                     }}
-                    className="w-full py-2 rounded-xl bg-blue-500/15 hover:bg-blue-500 text-blue-300 hover:text-white font-bold text-xs transition-all"
+                    className="w-full py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-white font-medium text-xs active:scale-95 transition-all"
                   >
                     Record Repayment
                   </button>
@@ -537,39 +537,39 @@ export const BudgetsView: React.FC = () => {
       {activeSection === 'recurring' && (
         <div className="space-y-3 animate-in fade-in duration-150">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
               Recurring Bills & Subscriptions
             </h3>
             <button
               type="button"
               onClick={() => setIsAddRecurringOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-emerald-500 text-neutral-950 font-bold text-xs flex items-center gap-1 shadow-sm"
+              className="px-3 py-1.5 rounded-xl bg-white text-black font-semibold text-xs flex items-center gap-1 active:scale-95 shadow-sm transition-all"
             >
               <Plus className="w-3.5 h-3.5" />
               Add Recurring
             </button>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {recurringRules.map((rule) => (
               <div
                 key={rule.id}
-                className="bg-neutral-900 border border-neutral-800 rounded-2xl p-3.5 flex items-center justify-between"
+                className="bg-[#121214] border border-white/[0.08] rounded-2xl p-3.5 flex items-center justify-between hover:border-white/[0.12] transition-colors shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
               >
                 <div>
-                  <h4 className="text-xs font-bold text-white">{rule.name}</h4>
-                  <div className="text-[10px] text-neutral-400">
-                    Due {rule.nextDueDate} • {rule.frequency}
+                  <h4 className="text-[13px] font-medium text-white tracking-tight">{rule.name}</h4>
+                  <div className="text-[11px] text-neutral-500">
+                    Due {rule.nextDueDate} • <span className="capitalize">{rule.frequency}</span>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs font-bold text-white tabular-nums">
+                <div className="flex items-center space-x-2.5">
+                  <span className="text-[13px] font-semibold text-white tabular-nums tracking-tight">
                     {formatINR(rule.amountPaise)}
                   </span>
                   <button
                     type="button"
                     onClick={() => markRecurringProcessed(rule.id, { recordTx: true })}
-                    className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 font-bold text-[11px] hover:bg-emerald-500 hover:text-neutral-950 transition-all"
+                    className="px-2.5 py-1 rounded-full bg-white/[0.08] text-neutral-200 font-medium text-[11px] hover:bg-emerald-400 hover:text-black border border-white/[0.08] transition-all active:scale-95"
                   >
                     Mark Paid
                   </button>
@@ -582,34 +582,34 @@ export const BudgetsView: React.FC = () => {
 
       {/* MODAL: Configure Budget */}
       {isEditBudgetOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
-            <div className="flex justify-between items-center pb-2 border-b border-neutral-800">
-              <h3 className="text-sm font-bold text-white">Monthly Spending Budget</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in">
+          <div className="w-full max-w-sm bg-[#121214] border border-white/[0.1] rounded-3xl p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+            <div className="flex justify-between items-center pb-3 border-b border-white/[0.08]">
+              <h3 className="text-[13px] font-semibold text-white">Monthly Spending Budget</h3>
               <button
                 type="button"
                 onClick={() => setIsEditBudgetOpen(false)}
-                className="text-neutral-400 hover:text-white"
+                className="text-neutral-400 hover:text-white transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">
                 Overall Monthly Limit (₹)
               </label>
               <input
                 type="number"
                 value={budgetInputStr}
                 onChange={(e) => setBudgetInputStr(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
             {/* Category Limits */}
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1.5">
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1.5">
                 Category Limits (Optional)
               </label>
               <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
@@ -623,7 +623,7 @@ export const BudgetsView: React.FC = () => {
                       onChange={(e) =>
                         setCategoryLimitsState((prev) => ({ ...prev, [c.id]: e.target.value }))
                       }
-                      className="w-24 bg-neutral-950 border border-neutral-800 rounded-lg px-2 py-1 text-xs text-white text-right focus:outline-none"
+                      className="w-24 bg-black/80 border border-white/[0.08] rounded-lg px-2 py-1 text-xs text-white text-right focus:outline-none focus:border-white/30"
                     />
                   </div>
                 ))}
@@ -634,14 +634,14 @@ export const BudgetsView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsEditBudgetOpen(false)}
-                className="flex-1 py-2 rounded-xl bg-neutral-800 text-neutral-300 text-xs font-semibold"
+                className="flex-1 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-neutral-300 text-xs font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSaveBudget}
-                className="flex-1 py-2 rounded-xl bg-emerald-500 text-neutral-950 text-xs font-bold"
+                className="flex-1 py-2.5 rounded-xl bg-white text-black text-xs font-semibold active:scale-95 transition-all shadow-sm"
               >
                 Save Budget
               </button>
@@ -652,32 +652,32 @@ export const BudgetsView: React.FC = () => {
 
       {/* MODAL: Add Savings Goal */}
       {isGoalModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-2xl space-y-3">
-            <div className="flex justify-between items-center pb-2 border-b border-neutral-800">
-              <h3 className="text-sm font-bold text-white">New Savings Goal</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in">
+          <div className="w-full max-w-sm bg-[#121214] border border-white/[0.1] rounded-3xl p-6 shadow-2xl space-y-3.5">
+            <div className="flex justify-between items-center pb-3 border-b border-white/[0.08]">
+              <h3 className="text-[13px] font-semibold text-white">New Savings Goal</h3>
               <button
                 type="button"
                 onClick={() => setIsGoalModalOpen(false)}
-                className="text-neutral-400 hover:text-white"
+                className="text-neutral-400 hover:text-white transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">Goal Name</label>
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">Goal Name</label>
               <input
                 type="text"
                 placeholder="e.g. Laptop Upgrade, Emergency Fund"
                 value={goalName}
                 onChange={(e) => setGoalName(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">
                 Target Amount (₹)
               </label>
               <input
@@ -685,32 +685,32 @@ export const BudgetsView: React.FC = () => {
                 placeholder="e.g. 50000"
                 value={goalTargetStr}
                 onChange={(e) => setGoalTargetStr(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">Priority</label>
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">Priority</label>
               <select
                 value={goalPriority}
                 onChange={(e) => setGoalPriority(e.target.value as GoalPriority)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               >
-                <option value="high">High Priority</option>
-                <option value="medium">Medium Priority</option>
-                <option value="low">Low Priority</option>
+                <option value="high" className="bg-neutral-900 text-white">High Priority</option>
+                <option value="medium" className="bg-neutral-900 text-white">Medium Priority</option>
+                <option value="low" className="bg-neutral-900 text-white">Low Priority</option>
               </select>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">
                 Target Date (Optional)
               </label>
               <input
                 type="date"
                 value={goalDate}
                 onChange={(e) => setGoalDate(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
@@ -718,14 +718,14 @@ export const BudgetsView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsGoalModalOpen(false)}
-                className="flex-1 py-2 rounded-xl bg-neutral-800 text-neutral-300 text-xs font-semibold"
+                className="flex-1 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-neutral-300 text-xs font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleAddGoal}
-                className="flex-1 py-2 rounded-xl bg-emerald-500 text-neutral-950 text-xs font-bold"
+                className="flex-1 py-2.5 rounded-xl bg-white text-black text-xs font-semibold active:scale-95 transition-all shadow-sm"
               >
                 Create Goal
               </button>
@@ -736,23 +736,23 @@ export const BudgetsView: React.FC = () => {
 
       {/* MODAL: Allocate to Goal */}
       {allocatingGoalId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-2xl space-y-3">
-            <div className="flex justify-between items-center pb-2 border-b border-neutral-800">
-              <h3 className="text-sm font-bold text-white capitalize">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in">
+          <div className="w-full max-w-sm bg-[#121214] border border-white/[0.1] rounded-3xl p-6 shadow-2xl space-y-3.5">
+            <div className="flex justify-between items-center pb-3 border-b border-white/[0.08]">
+              <h3 className="text-[13px] font-semibold text-white capitalize">
                 {allocType} Savings Allocation
               </h3>
               <button
                 type="button"
                 onClick={() => setAllocatingGoalId(null)}
-                className="text-neutral-400 hover:text-white"
+                className="text-neutral-400 hover:text-white transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">
                 Amount in Rupees (₹)
               </label>
               <input
@@ -761,7 +761,7 @@ export const BudgetsView: React.FC = () => {
                 placeholder="0"
                 value={allocAmountStr}
                 onChange={(e) => setAllocAmountStr(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
@@ -774,14 +774,14 @@ export const BudgetsView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setAllocatingGoalId(null)}
-                className="flex-1 py-2 rounded-xl bg-neutral-800 text-neutral-300 text-xs font-semibold"
+                className="flex-1 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-neutral-300 text-xs font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleAllocationSubmit}
-                className="flex-1 py-2 rounded-xl bg-emerald-500 text-neutral-950 text-xs font-bold"
+                className="flex-1 py-2.5 rounded-xl bg-white text-black text-xs font-semibold active:scale-95 transition-all shadow-sm"
               >
                 Confirm {allocType}
               </button>
@@ -792,42 +792,42 @@ export const BudgetsView: React.FC = () => {
 
       {/* MODAL: Record Debt Payment */}
       {payingDebtId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-2xl space-y-3">
-            <div className="flex justify-between items-center pb-2 border-b border-neutral-800">
-              <h3 className="text-sm font-bold text-white">Record Debt Repayment</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in">
+          <div className="w-full max-w-sm bg-[#121214] border border-white/[0.1] rounded-3xl p-6 shadow-2xl space-y-3.5">
+            <div className="flex justify-between items-center pb-3 border-b border-white/[0.08]">
+              <h3 className="text-[13px] font-semibold text-white">Record Debt Repayment</h3>
               <button
                 type="button"
                 onClick={() => setPayingDebtId(null)}
-                className="text-neutral-400 hover:text-white"
+                className="text-neutral-400 hover:text-white transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">
                 Payment Amount (₹)
               </label>
               <input
                 type="number"
                 value={debtPayAmountStr}
                 onChange={(e) => setDebtPayAmountStr(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">
                 Paid From Account
               </label>
               <select
                 value={debtPayAccountId}
                 onChange={(e) => setDebtPayAccountId(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               >
                 {accounts.map((a) => (
-                  <option key={a.id} value={a.id}>
+                  <option key={a.id} value={a.id} className="bg-neutral-900 text-white">
                     {a.name}
                   </option>
                 ))}
@@ -838,14 +838,14 @@ export const BudgetsView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setPayingDebtId(null)}
-                className="flex-1 py-2 rounded-xl bg-neutral-800 text-neutral-300 text-xs font-semibold"
+                className="flex-1 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-neutral-300 text-xs font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleDebtPaymentSubmit}
-                className="flex-1 py-2 rounded-xl bg-blue-500 text-white text-xs font-bold"
+                className="flex-1 py-2.5 rounded-xl bg-white text-black text-xs font-semibold active:scale-95 transition-all shadow-sm"
               >
                 Save Payment
               </button>
@@ -856,59 +856,59 @@ export const BudgetsView: React.FC = () => {
 
       {/* MODAL: Add Debt */}
       {isAddDebtOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-2xl space-y-3">
-            <div className="flex justify-between items-center pb-2 border-b border-neutral-800">
-              <h3 className="text-sm font-bold text-white">Track New Debt / Loan</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in">
+          <div className="w-full max-w-sm bg-[#121214] border border-white/[0.1] rounded-3xl p-6 shadow-2xl space-y-3.5">
+            <div className="flex justify-between items-center pb-3 border-b border-white/[0.08]">
+              <h3 className="text-[13px] font-semibold text-white">Track New Debt / Loan</h3>
               <button
                 type="button"
                 onClick={() => setIsAddDebtOpen(false)}
-                className="text-neutral-400 hover:text-white"
+                className="text-neutral-400 hover:text-white transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">Description</label>
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">Description</label>
               <input
                 type="text"
                 placeholder="e.g. Roommate Split, Laptop EMI"
                 value={newDebtName}
                 onChange={(e) => setNewDebtName(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">Lender / Friend</label>
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">Lender / Friend</label>
               <input
                 type="text"
                 placeholder="e.g. Rohan, HDFC Bank, Slice"
                 value={newDebtLender}
                 onChange={(e) => setNewDebtLender(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">Amount (₹)</label>
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">Amount (₹)</label>
               <input
                 type="number"
                 placeholder="0"
                 value={newDebtAmountStr}
                 onChange={(e) => setNewDebtAmountStr(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">Due Date</label>
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">Due Date</label>
               <input
                 type="date"
                 value={newDebtDueDate}
                 onChange={(e) => setNewDebtDueDate(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
@@ -916,14 +916,14 @@ export const BudgetsView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsAddDebtOpen(false)}
-                className="flex-1 py-2 rounded-xl bg-neutral-800 text-neutral-300 text-xs font-semibold"
+                className="flex-1 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-neutral-300 text-xs font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleAddDebtSubmit}
-                className="flex-1 py-2 rounded-xl bg-blue-500 text-white text-xs font-bold"
+                className="flex-1 py-2.5 rounded-xl bg-white text-black text-xs font-semibold active:scale-95 transition-all shadow-sm"
               >
                 Save Debt
               </button>
@@ -934,63 +934,63 @@ export const BudgetsView: React.FC = () => {
 
       {/* MODAL: Add Recurring */}
       {isAddRecurringOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-sm bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-2xl space-y-3">
-            <div className="flex justify-between items-center pb-2 border-b border-neutral-800">
-              <h3 className="text-sm font-bold text-white">Add Recurring Bill</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in">
+          <div className="w-full max-w-sm bg-[#121214] border border-white/[0.1] rounded-3xl p-6 shadow-2xl space-y-3.5">
+            <div className="flex justify-between items-center pb-3 border-b border-white/[0.08]">
+              <h3 className="text-[13px] font-semibold text-white">Add Recurring Bill</h3>
               <button
                 type="button"
                 onClick={() => setIsAddRecurringOpen(false)}
-                className="text-neutral-400 hover:text-white"
+                className="text-neutral-400 hover:text-white transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">Bill Name</label>
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">Bill Name</label>
               <input
                 type="text"
                 placeholder="e.g. PG Rent, Spotify, Mobile Pack"
                 value={recName}
                 onChange={(e) => setRecName(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">Amount (₹)</label>
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">Amount (₹)</label>
               <input
                 type="number"
                 placeholder="0"
                 value={recAmountStr}
                 onChange={(e) => setRecAmountStr(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">Frequency</label>
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">Frequency</label>
               <select
                 value={recFrequency}
                 onChange={(e) => setRecFrequency(e.target.value as RecurringFrequency)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               >
-                <option value="monthly">Monthly</option>
-                <option value="weekly">Weekly</option>
-                <option value="daily">Daily</option>
+                <option value="monthly" className="bg-neutral-900 text-white">Monthly</option>
+                <option value="weekly" className="bg-neutral-900 text-white">Weekly</option>
+                <option value="daily" className="bg-neutral-900 text-white">Daily</option>
               </select>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">Category</label>
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">Category</label>
               <select
                 value={recCategoryId}
                 onChange={(e) => setRecCategoryId(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               >
                 {categories.filter((c) => c.type === 'expense').map((c) => (
-                  <option key={c.id} value={c.id}>
+                  <option key={c.id} value={c.id} className="bg-neutral-900 text-white">
                     {c.name}
                   </option>
                 ))}
@@ -998,12 +998,12 @@ export const BudgetsView: React.FC = () => {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1">Next Due Date</label>
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1">Next Due Date</label>
               <input
                 type="date"
                 value={recNextDueDate}
                 onChange={(e) => setRecNextDueDate(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full bg-black/80 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30"
               />
             </div>
 
@@ -1011,14 +1011,14 @@ export const BudgetsView: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsAddRecurringOpen(false)}
-                className="flex-1 py-2 rounded-xl bg-neutral-800 text-neutral-300 text-xs font-semibold"
+                className="flex-1 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-neutral-300 text-xs font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleAddRecurringSubmit}
-                className="flex-1 py-2 rounded-xl bg-emerald-500 text-neutral-950 text-xs font-bold"
+                className="flex-1 py-2.5 rounded-xl bg-white text-black text-xs font-semibold active:scale-95 transition-all shadow-sm"
               >
                 Save Bill
               </button>

@@ -17,20 +17,20 @@ const AppContent: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-neutral-950 flex flex-col items-center justify-center text-center p-4">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-neutral-950 font-black text-xl shadow-lg shadow-emerald-500/30 animate-pulse mb-3">
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-center p-4">
+        <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center text-emerald-400 font-bold text-xl mb-3">
           ₹
         </div>
-        <h2 className="text-sm font-bold text-white">Loading Pennywise...</h2>
-        <p className="text-xs text-neutral-500 mt-1">Initializing local database</p>
+        <h2 className="text-sm font-semibold text-white tracking-tight">Pennywise</h2>
+        <p className="text-xs text-zinc-500 mt-1">Securing local vault...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col selection:bg-emerald-500/20 selection:text-emerald-300">
+    <div className="min-h-screen bg-black text-zinc-100 flex flex-col selection:bg-emerald-500/20 selection:text-emerald-300">
       {/* 390px iPhone Viewport Shell Container */}
-      <div className="w-full max-w-md mx-auto min-h-screen flex flex-col bg-neutral-950 relative border-x border-neutral-800/40 pb-[5.5rem]">
+      <div className="w-full max-w-md mx-auto min-h-screen flex flex-col bg-black relative border-x border-white/[0.07] pb-[5.5rem]">
         {/* Sticky iOS Header with month switcher */}
         <Header />
 

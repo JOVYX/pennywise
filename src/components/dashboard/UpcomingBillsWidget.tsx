@@ -42,46 +42,46 @@ export const UpcomingBillsWidget: React.FC = () => {
   };
 
   return (
-    <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-lg">
-      <div className="flex items-center justify-between mb-3">
+    <div className="bg-[#121214] border border-white/[0.08] rounded-3xl p-5 shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+      <div className="flex items-center justify-between mb-3.5">
         <div className="flex items-center space-x-2">
-          <CalendarClock className="w-4 h-4 text-amber-400" />
-          <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+          <CalendarClock className="w-4 h-4 text-neutral-300" />
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
             Upcoming Bills & Repayments
           </h3>
         </div>
-        <span className="text-[11px] font-medium text-neutral-400">
+        <span className="text-[11px] font-medium text-neutral-400 tabular-nums px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.06]">
           {activeBills.length + activeDebts.length} pending
         </span>
       </div>
 
-      <div className="space-y-2.5">
+      <div className="space-y-2">
         {/* Recurring Bills */}
         {activeBills.slice(0, 3).map((bill) => (
           <div
             key={bill.id}
-            className="flex items-center justify-between p-3 rounded-2xl bg-neutral-950/70 border border-neutral-800/80"
+            className="flex items-center justify-between p-3 rounded-2xl bg-black/50 border border-white/[0.05] hover:border-white/[0.09] transition-colors"
           >
             <div>
-              <div className="text-xs font-bold text-white truncate max-w-[160px]">
+              <div className="text-[13px] font-medium text-white truncate max-w-[160px] tracking-tight">
                 {bill.name}
               </div>
-              <div className="text-[10px] text-neutral-400">
-                Due {bill.nextDueDate} • {bill.frequency}
+              <div className="text-[11px] text-neutral-500 font-normal">
+                Due {bill.nextDueDate} • <span className="capitalize">{bill.frequency}</span>
               </div>
             </div>
 
             <div className="flex items-center space-x-2.5">
-              <span className="text-xs font-extrabold text-neutral-200 tabular-nums">
+              <span className="text-[13px] font-semibold text-white tabular-nums tracking-tight">
                 {formatINR(bill.amountPaise)}
               </span>
               <button
                 type="button"
                 disabled={processingId === bill.id}
                 onClick={() => handlePayBill(bill.id)}
-                className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500 hover:text-neutral-950 transition-all flex items-center gap-1"
+                className="px-2.5 py-1 text-[11px] font-medium rounded-full bg-white/[0.08] hover:bg-emerald-400 hover:text-black border border-white/[0.08] text-neutral-200 transition-all active:scale-95 flex items-center gap-1"
               >
-                <Check className="w-3 h-3" />
+                <Check className="w-3 h-3 stroke-[2.5]" />
                 <span>Paid</span>
               </button>
             </div>
@@ -94,28 +94,28 @@ export const UpcomingBillsWidget: React.FC = () => {
           return (
             <div
               key={debt.id}
-              className="flex items-center justify-between p-3 rounded-2xl bg-neutral-950/70 border border-neutral-800/80"
+              className="flex items-center justify-between p-3 rounded-2xl bg-black/50 border border-white/[0.05] hover:border-white/[0.09] transition-colors"
             >
               <div>
-                <div className="text-xs font-bold text-white truncate max-w-[160px]">
+                <div className="text-[13px] font-medium text-white truncate max-w-[160px] tracking-tight">
                   {debt.name}
                 </div>
-                <div className="text-[10px] text-rose-400 font-medium">
+                <div className="text-[11px] text-neutral-500 font-normal">
                   Bal: {formatINR(debt.currentBalancePaise)}
                 </div>
               </div>
 
               <div className="flex items-center space-x-2.5">
-                <span className="text-xs font-extrabold text-neutral-200 tabular-nums">
+                <span className="text-[13px] font-semibold text-white tabular-nums tracking-tight">
                   {formatINR(dueAmount)}
                 </span>
                 <button
                   type="button"
                   disabled={processingId === debt.id}
                   onClick={() => handlePayDebt(debt.id, dueAmount)}
-                  className="px-2.5 py-1 text-[11px] font-bold rounded-lg bg-blue-500/15 text-blue-300 hover:bg-blue-500 hover:text-white transition-all flex items-center gap-1"
+                  className="px-2.5 py-1 text-[11px] font-medium rounded-full bg-white/[0.08] hover:bg-neutral-200 hover:text-black border border-white/[0.08] text-neutral-200 transition-all active:scale-95 flex items-center gap-1"
                 >
-                  <Check className="w-3 h-3" />
+                  <Check className="w-3 h-3 stroke-[2.5]" />
                   <span>Settle</span>
                 </button>
               </div>

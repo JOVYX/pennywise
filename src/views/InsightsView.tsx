@@ -113,7 +113,7 @@ export const InsightsView: React.FC = () => {
   return (
     <div className="space-y-4 px-4 py-3 max-w-md mx-auto">
       {/* Range Filter */}
-      <div className="flex justify-between items-center bg-neutral-900 p-1 rounded-2xl border border-neutral-800 text-xs font-semibold">
+      <div className="flex justify-between items-center bg-white/[0.04] p-1 rounded-2xl border border-white/[0.08] text-xs font-medium">
         {[
           { id: 'this-month', label: 'This Month' },
           { id: 'last-3-months', label: '3 Months' },
@@ -125,7 +125,7 @@ export const InsightsView: React.FC = () => {
             onClick={() => setTimeRange(r.id as any)}
             className={`flex-1 py-1.5 rounded-xl transition-all ${
               timeRange === r.id
-                ? 'bg-neutral-800 text-white shadow-sm ring-1 ring-neutral-700'
+                ? 'bg-white/[0.14] text-white shadow-sm ring-1 ring-white/10 font-semibold'
                 : 'text-neutral-400 hover:text-neutral-200'
             }`}
           >
@@ -135,12 +135,12 @@ export const InsightsView: React.FC = () => {
       </div>
 
       {/* Income vs Expense Bar Chart */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-lg">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
+      <div className="bg-[#121214] border border-white/[0.08] rounded-3xl p-5 shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+        <div className="flex items-center justify-between mb-3.5">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
             Income vs Expenses
           </h3>
-          <span className="text-xs font-extrabold text-emerald-400 tabular-nums">
+          <span className="text-xs font-semibold text-emerald-400 tabular-nums">
             Net Saved: {formatINR(
               Math.max(
                 0,
@@ -154,16 +154,17 @@ export const InsightsView: React.FC = () => {
         <div className="h-44 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={incomeExpenseData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <XAxis dataKey="name" stroke="#a3a3a3" fontSize={11} tickLine={false} />
-              <YAxis stroke="#a3a3a3" fontSize={10} tickLine={false} tickFormatter={(v) => `₹${v}`} />
+              <XAxis dataKey="name" stroke="#525252" fontSize={11} tickLine={false} />
+              <YAxis stroke="#525252" fontSize={10} tickLine={false} tickFormatter={(v) => `₹${v}`} />
               <Tooltip
                 formatter={(val: any) => [`₹${val}`, 'Amount']}
                 contentStyle={{
-                  backgroundColor: '#171717',
-                  border: '1px solid #262626',
-                  borderRadius: '12px',
+                  backgroundColor: '#121214',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '14px',
                   color: '#fff',
-                  fontSize: '12px'
+                  fontSize: '12px',
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.6)'
                 }}
               />
               <Bar dataKey="amount" radius={[8, 8, 0, 0]} />
@@ -174,8 +175,8 @@ export const InsightsView: React.FC = () => {
 
       {/* Category Breakdown Donut / Pie */}
       {categoryData.length > 0 && (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-lg">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400 mb-3">
+        <div className="bg-[#121214] border border-white/[0.08] rounded-3xl p-5 shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 mb-3.5">
             Spending By Category
           </h3>
 
@@ -188,8 +189,8 @@ export const InsightsView: React.FC = () => {
                   nameKey="name"
                   cx="50%"
                   cy="50%"
-                  innerRadius={50}
-                  outerRadius={75}
+                  innerRadius={52}
+                  outerRadius={74}
                   paddingAngle={3}
                 >
                   {categoryData.map((entry, index) => (
@@ -199,11 +200,12 @@ export const InsightsView: React.FC = () => {
                 <Tooltip
                   formatter={(val: any) => [`₹${val}`, 'Spent']}
                   contentStyle={{
-                    backgroundColor: '#171717',
-                    border: '1px solid #262626',
-                    borderRadius: '12px',
+                    backgroundColor: '#121214',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '14px',
                     color: '#fff',
-                    fontSize: '12px'
+                    fontSize: '12px',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.6)'
                   }}
                 />
               </PieChart>
@@ -211,7 +213,7 @@ export const InsightsView: React.FC = () => {
           </div>
 
           {/* Category Top List */}
-          <div className="space-y-2 mt-2 pt-2 border-t border-neutral-800">
+          <div className="space-y-2 mt-2 pt-2.5 border-t border-white/[0.06]">
             {categoryData.slice(0, 4).map((cat) => (
               <div key={cat.name} className="flex items-center justify-between text-xs">
                 <div className="flex items-center space-x-2">
@@ -220,7 +222,7 @@ export const InsightsView: React.FC = () => {
                     {cat.name}
                   </span>
                 </div>
-                <span className="font-bold text-white tabular-nums">
+                <span className="font-semibold text-white tabular-nums">
                   ₹{cat.value.toLocaleString('en-IN')}
                 </span>
               </div>
@@ -231,8 +233,8 @@ export const InsightsView: React.FC = () => {
 
       {/* Daily Spending Trend Area */}
       {dailyTrendData.length > 0 && (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-lg">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400 mb-3">
+        <div className="bg-[#121214] border border-white/[0.08] rounded-3xl p-5 shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 mb-3.5">
             Daily Spending Trend
           </h3>
           <div className="h-40 w-full">
@@ -240,26 +242,27 @@ export const InsightsView: React.FC = () => {
               <AreaChart data={dailyTrendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="trendGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stop-color="#10b981" stop-opacity={0.3} />
-                    <stop offset="95%" stop-color="#10b981" stop-opacity={0} />
+                    <stop offset="5%" stopColor="#34d399" stopOpacity={0.25} />
+                    <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="day" stroke="#a3a3a3" fontSize={10} tickLine={false} />
-                <YAxis stroke="#a3a3a3" fontSize={10} tickLine={false} tickFormatter={(v) => `₹${v}`} />
+                <XAxis dataKey="day" stroke="#525252" fontSize={10} tickLine={false} />
+                <YAxis stroke="#525252" fontSize={10} tickLine={false} tickFormatter={(v) => `₹${v}`} />
                 <Tooltip
                   formatter={(val: any) => [`₹${val}`, 'Spent']}
                   contentStyle={{
-                    backgroundColor: '#171717',
-                    border: '1px solid #262626',
-                    borderRadius: '12px',
+                    backgroundColor: '#121214',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: '14px',
                     color: '#fff',
-                    fontSize: '12px'
+                    fontSize: '12px',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.6)'
                   }}
                 />
                 <Area
                   type="monotone"
                   dataKey="amount"
-                  stroke="#10b981"
+                  stroke="#34d399"
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#trendGrad)"
@@ -271,10 +274,10 @@ export const InsightsView: React.FC = () => {
       )}
 
       {/* Actionable Ways to Save */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-lg space-y-3">
+      <div className="bg-[#121214] border border-white/[0.08] rounded-3xl p-5 shadow-[0_4px_24px_rgba(0,0,0,0.4)] space-y-3">
         <div className="flex items-center space-x-2">
-          <Lightbulb className="w-4 h-4 text-amber-400" />
-          <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+          <Lightbulb className="w-4 h-4 text-neutral-300" />
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
             Actionable Ways to Save
           </h3>
         </div>
@@ -284,16 +287,16 @@ export const InsightsView: React.FC = () => {
             Log more daily transactions to discover automated savings tips tailored to your spending!
           </p>
         ) : (
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {insights.map((tip) => (
               <div
                 key={tip.id}
-                className="p-3 bg-neutral-950/70 border border-neutral-800/80 rounded-2xl"
+                className="p-3.5 bg-black/50 border border-white/[0.05] rounded-2xl hover:border-white/[0.09] transition-colors"
               >
                 <div className="flex justify-between items-center mb-1">
-                  <h4 className="text-xs font-bold text-white">{tip.title}</h4>
+                  <h4 className="text-[13px] font-medium text-white tracking-tight">{tip.title}</h4>
                   {tip.estimatedMonthlySavingsPaise && (
-                    <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                       Save ~₹{Math.floor(tip.estimatedMonthlySavingsPaise / 100)}/mo
                     </span>
                   )}
@@ -307,18 +310,18 @@ export const InsightsView: React.FC = () => {
 
       {/* Largest Transactions */}
       {largestExpenses.length > 0 && (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-lg">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400 mb-3">
+        <div className="bg-[#121214] border border-white/[0.08] rounded-3xl p-5 shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+          <h3 className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400 mb-3.5">
             Largest Expenses
           </h3>
-          <div className="divide-y divide-neutral-800/70">
+          <div className="divide-y divide-white/[0.04]">
             {largestExpenses.map((tx) => (
-              <div key={tx.id} className="py-2 flex items-center justify-between text-xs">
+              <div key={tx.id} className="py-2.5 flex items-center justify-between text-xs">
                 <div>
-                  <div className="font-bold text-white truncate max-w-[170px]">{tx.merchant}</div>
-                  <div className="text-[10px] text-neutral-400">{tx.date.slice(0, 10)}</div>
+                  <div className="font-medium text-white truncate max-w-[170px] text-[13px] tracking-tight">{tx.merchant}</div>
+                  <div className="text-[11px] text-neutral-500">{tx.date.slice(0, 10)}</div>
                 </div>
-                <span className="font-extrabold text-white tabular-nums">
+                <span className="font-semibold text-white tabular-nums tracking-tight text-[13px]">
                   {formatINR(tx.amountPaise)}
                 </span>
               </div>

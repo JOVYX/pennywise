@@ -152,39 +152,42 @@ export const BillSplitterModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-md max-h-[92vh] flex flex-col bg-neutral-900 border border-neutral-800 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="w-full max-w-md max-h-[92vh] flex flex-col bg-[#121214] border-t sm:border border-white/[0.1] rounded-t-[32px] sm:rounded-3xl shadow-2xl overflow-hidden">
+        {/* Grab Handle */}
+        <div className="w-9 h-1 rounded-full bg-white/20 mx-auto mt-3 mb-1 sm:hidden" />
+
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-neutral-800/80 bg-neutral-900/90 sticky top-0 z-10 backdrop-blur-md">
+        <div className="flex items-center justify-between px-6 pt-3 pb-3 border-b border-white/[0.08] bg-[#121214]/90 sticky top-0 z-10 backdrop-blur-md">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center">
-              <Users className="w-5 h-5" />
+            <div className="w-8 h-8 rounded-xl bg-white/[0.06] border border-white/[0.08] text-neutral-300 flex items-center justify-center">
+              <Users className="w-4 h-4 text-neutral-300" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white leading-tight">Split with Friends</h2>
-              <p className="text-[11px] text-neutral-400">Splitwise-style roommate & campus bill splitter</p>
+              <h2 className="text-[15px] font-semibold text-white leading-tight tracking-tight">Split with Friends</h2>
+              <p className="text-[11px] text-neutral-500">Roommate & campus bill splitter with zero-loss paise conservation</p>
             </div>
           </div>
           <button
             type="button"
             onClick={() => setIsSplitBillOpen(false)}
-            className="w-8 h-8 rounded-full bg-neutral-800 text-neutral-400 hover:text-white flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-full bg-white/[0.06] text-neutral-400 hover:text-white flex items-center justify-center transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Form Body */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
           {/* Bill Title & Suggestions */}
           <div>
-            <label className="text-xs font-semibold text-neutral-300 block mb-1.5">Bill Name</label>
+            <label className="text-[11px] font-medium text-neutral-300 block mb-1.5">Bill Name</label>
             <input
               type="text"
               value={billTitle}
               onChange={(e) => setBillTitle(e.target.value)}
               placeholder="e.g. Swiggy Dinner, Flat Wi-Fi"
-              className="w-full px-3.5 py-2.5 rounded-xl bg-neutral-950 border border-neutral-800 text-sm text-white focus:outline-none focus:border-purple-500/50"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-black/80 border border-white/[0.08] text-sm text-white focus:outline-none focus:border-white/30"
             />
             <div className="flex items-center gap-1.5 overflow-x-auto mt-2 pb-1 scrollbar-none">
               {quickTitles.map((qt) => (
@@ -194,8 +197,8 @@ export const BillSplitterModal: React.FC = () => {
                   onClick={() => setBillTitle(qt)}
                   className={`text-[11px] px-2.5 py-1 rounded-lg border whitespace-nowrap transition-colors ${
                     billTitle === qt
-                      ? 'bg-purple-500/20 border-purple-500/40 text-purple-300 font-medium'
-                      : 'bg-neutral-950/60 border-neutral-800/80 text-neutral-400 hover:text-neutral-200'
+                      ? 'bg-white/[0.14] border-white/20 text-white font-medium'
+                      : 'bg-white/[0.03] border-white/[0.05] text-neutral-400 hover:text-neutral-200'
                   }`}
                 >
                   {qt}
@@ -207,7 +210,7 @@ export const BillSplitterModal: React.FC = () => {
           {/* Amount and Who Paid */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1.5">Total Amount (₹)</label>
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1.5">Total Amount (₹)</label>
               <div className="relative">
                 <span className="absolute left-3 top-2.5 text-neutral-400 font-semibold text-sm">₹</span>
                 <input
@@ -216,20 +219,20 @@ export const BillSplitterModal: React.FC = () => {
                   value={totalStr}
                   onChange={(e) => setTotalStr(e.target.value)}
                   placeholder="0"
-                  className="w-full pl-7 pr-3 py-2.5 rounded-xl bg-neutral-950 border border-neutral-800 text-base font-bold text-white focus:outline-none focus:border-purple-500/50"
+                  className="w-full pl-7 pr-3 py-2.5 rounded-xl bg-black/80 border border-white/[0.08] text-base font-bold text-white focus:outline-none focus:border-white/30 tabular-nums"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-neutral-300 block mb-1.5">Who Paid?</label>
+              <label className="text-[11px] font-medium text-neutral-300 block mb-1.5">Who Paid?</label>
               <select
                 value={payerId}
                 onChange={(e) => setPayerId(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl bg-neutral-950 border border-neutral-800 text-sm text-white focus:outline-none focus:border-purple-500/50"
+                className="w-full px-3 py-2.5 rounded-xl bg-black/80 border border-white/[0.08] text-sm text-white focus:outline-none focus:border-white/30"
               >
                 {participants.map((p) => (
-                  <option key={p.id} value={p.id}>
+                  <option key={p.id} value={p.id} className="bg-neutral-900 text-white">
                     {p.name} {p.isSelf ? '(Me)' : ''}
                   </option>
                 ))}
@@ -239,16 +242,16 @@ export const BillSplitterModal: React.FC = () => {
 
           {/* Split Method Tabs */}
           <div>
-            <label className="text-xs font-semibold text-neutral-300 block mb-1.5">Split Method</label>
-            <div className="grid grid-cols-3 gap-1 p-1 bg-neutral-950 rounded-xl border border-neutral-800">
+            <label className="text-[11px] font-medium text-neutral-300 block mb-1.5">Split Method</label>
+            <div className="grid grid-cols-3 gap-1 p-1 bg-white/[0.04] rounded-2xl border border-white/[0.08]">
               {(['equal', 'shares', 'exact'] as SplitMethod[]).map((m) => (
                 <button
                   key={m}
                   type="button"
                   onClick={() => setMethod(m)}
-                  className={`py-1.5 text-xs font-medium rounded-lg capitalize transition-colors ${
+                  className={`py-1.5 text-xs font-medium rounded-xl capitalize transition-all ${
                     method === m
-                      ? 'bg-purple-600 text-white shadow-sm'
+                      ? 'bg-white/[0.14] text-white shadow-sm ring-1 ring-white/10 font-semibold'
                       : 'text-neutral-400 hover:text-white'
                   }`}
                 >
@@ -261,7 +264,7 @@ export const BillSplitterModal: React.FC = () => {
           {/* Friends in this Split */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-semibold text-neutral-300">
+              <label className="text-[11px] font-medium text-neutral-300">
                 Split Among ({participants.length} people)
               </label>
             </div>
@@ -271,14 +274,14 @@ export const BillSplitterModal: React.FC = () => {
               {splitResult.participants.map((p) => (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between px-3 py-2 bg-neutral-950/70 border border-neutral-800/80 rounded-xl"
+                  className="flex items-center justify-between px-3 py-2 bg-black/50 border border-white/[0.05] rounded-xl hover:border-white/[0.09] transition-colors"
                 >
                   <div className="flex items-center gap-2">
                     <div
-                      className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold ${
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-semibold ${
                         p.isSelf
-                          ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                          : 'bg-neutral-800 text-neutral-300'
+                          ? 'bg-white/[0.14] text-white border border-white/20'
+                          : 'bg-white/[0.04] text-neutral-300'
                       }`}
                     >
                       {p.name.charAt(0).toUpperCase()}
@@ -303,12 +306,12 @@ export const BillSplitterModal: React.FC = () => {
                               prev.map((item) => (item.id === p.id ? { ...item, shares: val } : item))
                             );
                           }}
-                          className="w-12 px-1.5 py-1 text-center bg-neutral-900 border border-neutral-700 text-xs text-white rounded"
+                          className="w-12 px-1.5 py-1 text-center bg-black/80 border border-white/[0.08] text-xs text-white rounded"
                         />
                       </div>
                     )}
 
-                    <span className="text-xs font-bold text-neutral-200">
+                    <span className="text-xs font-semibold text-white tabular-nums tracking-tight">
                       {formatINR(p.amountPaise)}
                     </span>
 
@@ -340,12 +343,12 @@ export const BillSplitterModal: React.FC = () => {
                   }
                 }}
                 placeholder="Add friend's name (e.g. Priya)"
-                className="flex-1 px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-800 text-xs text-white focus:outline-none focus:border-purple-500/50"
+                className="flex-1 px-3 py-2 rounded-xl bg-black/80 border border-white/[0.08] text-xs text-white focus:outline-none focus:border-white/30"
               />
               <button
                 type="button"
                 onClick={handleAddFriend}
-                className="px-3 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold text-white flex items-center gap-1 transition-colors"
+                className="px-3.5 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-xs font-medium text-white flex items-center gap-1 transition-colors border border-white/[0.06]"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Add
@@ -354,23 +357,23 @@ export const BillSplitterModal: React.FC = () => {
           </div>
 
           {/* Settlement Summary Card */}
-          <div className="p-3.5 rounded-2xl bg-gradient-to-br from-neutral-950 to-neutral-900 border border-neutral-800 shadow-sm space-y-2">
+          <div className="p-4 rounded-2xl bg-black/60 border border-white/[0.06] shadow-sm space-y-2">
             <div className="flex items-center justify-between text-xs">
               <span className="text-neutral-400">Your Share:</span>
-              <span className="font-bold text-white">{formatINR(settlement.userNetExpensePaise)}</span>
+              <span className="font-semibold text-white tabular-nums">{formatINR(settlement.userNetExpensePaise)}</span>
             </div>
 
             {isPayerSelf ? (
-              <div className="flex items-center justify-between text-xs pt-1.5 border-t border-neutral-800/80">
+              <div className="flex items-center justify-between text-xs pt-2 border-t border-white/[0.06]">
                 <span className="text-emerald-400 font-medium">Friends owe you:</span>
-                <span className="font-bold text-emerald-400">
+                <span className="font-semibold text-emerald-400 tabular-nums">
                   {formatINR(totalPaise - settlement.userNetExpensePaise)}
                 </span>
               </div>
             ) : (
-              <div className="flex items-center justify-between text-xs pt-1.5 border-t border-neutral-800/80">
-                <span className="text-amber-400 font-medium">You owe {payerName}:</span>
-                <span className="font-bold text-amber-400">
+              <div className="flex items-center justify-between text-xs pt-2 border-t border-white/[0.06]">
+                <span className="text-neutral-300 font-medium">You owe {payerName}:</span>
+                <span className="font-semibold text-white tabular-nums">
                   {formatINR(settlement.userNetExpensePaise)}
                 </span>
               </div>
@@ -379,11 +382,11 @@ export const BillSplitterModal: React.FC = () => {
         </div>
 
         {/* Footer Actions */}
-        <div className="p-4 bg-neutral-900 border-t border-neutral-800/80 grid grid-cols-2 gap-3">
+        <div className="p-4 bg-[#121214] border-t border-white/[0.08] grid grid-cols-2 gap-3">
           <button
             type="button"
             onClick={handleShareWhatsApp}
-            className="py-3 px-4 rounded-xl bg-neutral-800 hover:bg-neutral-700 active:scale-98 text-xs font-bold text-white flex items-center justify-center gap-2 transition-all border border-neutral-700"
+            className="py-3 px-4 rounded-2xl bg-white/[0.08] hover:bg-white/[0.14] active:scale-95 text-xs font-medium text-white flex items-center justify-center gap-2 transition-all border border-white/[0.08]"
           >
             {copySuccess ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
             {copySuccess ? 'Copied Link!' : 'WhatsApp / Share'}
@@ -393,11 +396,11 @@ export const BillSplitterModal: React.FC = () => {
             type="button"
             onClick={handleRecordToPennywise}
             disabled={totalPaise <= 0 || saveSuccess}
-            className="py-3 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 active:scale-98 text-xs font-bold text-white flex items-center justify-center gap-2 transition-all shadow-lg shadow-purple-600/20 disabled:opacity-50"
+            className="py-3 px-4 rounded-2xl bg-white hover:bg-neutral-200 active:scale-95 text-xs font-semibold text-black flex items-center justify-center gap-2 transition-all shadow-md disabled:opacity-40"
           >
             {saveSuccess ? (
               <>
-                <Check className="w-4 h-4" /> Recorded!
+                <Check className="w-4 h-4 stroke-[2.5]" /> Recorded!
               </>
             ) : (
               <>

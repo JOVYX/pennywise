@@ -1,3 +1,4 @@
+import React from 'react';
 import { ReceiptText, ChevronRight, Sparkles } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { formatINR, formatFriendlyDate } from '../../utils/formatters';
@@ -16,11 +17,11 @@ export const RecentTransactionsWidget: React.FC = () => {
   };
 
   return (
-    <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-lg">
+    <div className="bg-[#121214] border border-white/[0.08] rounded-3xl p-5 shadow-sm">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
-          <ReceiptText className="w-4 h-4 text-emerald-400" />
-          <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+          <ReceiptText className="w-4 h-4 text-zinc-400" />
+          <h3 className="text-xs font-semibold text-white tracking-tight">
             Recent Transactions
           </h3>
         </div>
@@ -28,22 +29,22 @@ export const RecentTransactionsWidget: React.FC = () => {
           <button
             type="button"
             onClick={() => setSelectedTab('transactions')}
-            className="text-xs font-semibold text-emerald-400 flex items-center hover:underline"
+            className="text-xs font-medium text-zinc-400 hover:text-white flex items-center transition-colors"
           >
-            <span>View All</span>
-            <ChevronRight className="w-3.5 h-3.5" />
+            <span>See All</span>
+            <ChevronRight className="w-3.5 h-3.5 ml-0.5" />
           </button>
         )}
       </div>
 
       {recent.length === 0 ? (
-        <div className="p-6 text-center rounded-2xl bg-neutral-950/60 border border-neutral-800/80">
-          <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto mb-3">
-            <ReceiptText className="w-6 h-6" />
+        <div className="p-6 text-center rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+          <div className="w-10 h-10 rounded-full bg-white/[0.05] text-zinc-400 flex items-center justify-center mx-auto mb-2.5">
+            <ReceiptText className="w-5 h-5" />
           </div>
-          <h4 className="text-sm font-bold text-white mb-1">No Transactions Yet</h4>
-          <p className="text-xs text-neutral-400 mb-4 max-w-xs mx-auto">
-            Log your daily expenses, pocket money, or load sample data to explore.
+          <h4 className="text-sm font-semibold text-white mb-1">No Transactions</h4>
+          <p className="text-xs text-zinc-400 mb-3.5 max-w-xs mx-auto">
+            Log your daily expenses, pocket money, or load sample data.
           </p>
           <div className="flex flex-col sm:flex-row gap-2 justify-center">
             <button
@@ -52,22 +53,22 @@ export const RecentTransactionsWidget: React.FC = () => {
                 setEditingTx(null);
                 setIsAddTxOpen(true);
               }}
-              className="px-4 py-2 rounded-xl bg-emerald-500 text-neutral-950 font-bold text-xs shadow-md hover:bg-emerald-400 transition-all"
+              className="px-3.5 py-2 rounded-xl bg-emerald-400 text-black font-semibold text-xs shadow-sm hover:bg-emerald-300 transition-all active:scale-95"
             >
-              + Record First Expense
+              + Record Expense
             </button>
             <button
               type="button"
               onClick={() => seedSampleData()}
-              className="px-4 py-2 rounded-xl bg-neutral-800 text-neutral-200 font-semibold text-xs border border-neutral-700 hover:bg-neutral-700 transition-all flex items-center justify-center gap-1.5"
+              className="px-3.5 py-2 rounded-xl bg-white/[0.06] text-zinc-300 font-medium text-xs border border-white/[0.08] hover:bg-white/10 transition-all active:scale-95 flex items-center justify-center gap-1.5"
             >
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              Load Sample Data
+              <Sparkles className="w-3.5 h-3.5 text-zinc-400" />
+              Load Demo Data
             </button>
           </div>
         </div>
       ) : (
-        <div className="divide-y divide-neutral-800/70">
+        <div className="divide-y divide-white/[0.04]">
           {recent.map((tx) => {
             const cat = categoryMap.get(tx.categoryId);
             const isExpense = tx.type === 'expense';
@@ -77,24 +78,24 @@ export const RecentTransactionsWidget: React.FC = () => {
               <div
                 key={tx.id}
                 onClick={() => handleTxClick(tx)}
-                className="py-2.5 flex items-center justify-between cursor-pointer hover:bg-neutral-800/40 px-2 -mx-2 rounded-xl transition-colors"
+                className="py-2.5 flex items-center justify-between cursor-pointer hover:bg-white/[0.03] px-2 -mx-2 rounded-xl transition-colors active:scale-[0.99]"
               >
                 <div className="flex items-center space-x-3">
                   <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                    className="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border border-white/[0.06]"
                     style={{
-                      backgroundColor: cat ? `${cat.color}20` : '#262626',
-                      color: cat?.color || '#94a3b8'
+                      backgroundColor: cat ? `${cat.color}15` : '#1c1c1e',
+                      color: cat?.color || '#a1a1aa'
                     }}
                   >
-                    <CategoryIcon name={cat?.icon || 'Receipt'} size={18} />
+                    <CategoryIcon name={cat?.icon || 'Receipt'} size={16} />
                   </div>
 
                   <div>
-                    <div className="text-xs font-bold text-white truncate max-w-[170px]">
+                    <div className="text-xs font-semibold text-white truncate max-w-[170px]">
                       {tx.merchant || cat?.name || 'Transaction'}
                     </div>
-                    <div className="text-[10px] text-neutral-400 flex items-center gap-1">
+                    <div className="text-[11px] text-zinc-400 flex items-center gap-1">
                       <span>{formatFriendlyDate(tx.date)}</span>
                       {tx.subCategory && (
                         <>
@@ -108,18 +109,18 @@ export const RecentTransactionsWidget: React.FC = () => {
 
                 <div className="text-right">
                   <div
-                    className={`text-xs font-extrabold tabular-nums ${
+                    className={`text-xs font-semibold tabular-nums ${
                       isIncome
                         ? 'text-emerald-400'
                         : isExpense
-                        ? 'text-neutral-100'
-                        : 'text-blue-400'
+                        ? 'text-white'
+                        : 'text-zinc-400'
                     }`}
                   >
                     {isIncome ? '+' : isExpense ? '-' : ''}
                     {formatINR(tx.amountPaise)}
                   </div>
-                  <span className="text-[9px] uppercase tracking-wider font-semibold px-1.5 py-0.2 rounded bg-neutral-800 text-neutral-400">
+                  <span className="text-[10px] uppercase tracking-wider font-medium text-zinc-400">
                     {tx.paymentMethod}
                   </span>
                 </div>

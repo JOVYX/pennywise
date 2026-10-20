@@ -9,9 +9,11 @@
   }
 
   html {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+    letter-spacing: -0.012em;
+    background-color: #000000;
   }
 
   body {
@@ -19,26 +21,56 @@
     padding-left: var(--sal);
     padding-right: var(--sar);
     padding-bottom: var(--sab);
+    background-color: #000000;
+    color: #f4f4f5;
   }
 
-  /* Support tabular nums for consistent currency width */
+  /* Support tabular nums for consistent currency and ledger layout */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1, "cv02" 1, "cv03" 1, "cv04" 1, "cv11" 1;
   }
 }
 
-/* Custom smooth scrollbar for iOS style */
+/* Apple Card / FinTech Glass Surfaces */
+.glass-surface {
+  background-color: rgba(18, 18, 20, 0.72);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-surface-subtle {
+  background-color: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-surface-solid {
+  background-color: #121214;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* Tactile iOS Press curve */
+.ios-press {
+  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.12s ease;
+}
+.ios-press:active {
+  transform: scale(0.98);
+  opacity: 0.88;
+}
+
+/* Custom smooth minimalist scrollbar */
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.4);
+  background: rgba(255, 255, 255, 0.3);
 }
