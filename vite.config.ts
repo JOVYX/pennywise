@@ -15,24 +15,24 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'icons/*.png'],
       manifest: {
-        name: 'Pennywise — Personal Finance for iPhone',
+        name: 'Pennywise — Personal Finance',
         short_name: 'Pennywise',
-        description: 'Offline-first personal expense tracker & savings planner for Indian college students',
-        theme_color: '#090d16',
-        background_color: '#090d16',
+        description: 'Offline-first personal expense tracker & savings planner designed for Indian college students',
+        theme_color: '#000000',
+        background_color: '#000000',
         display: 'standalone',
         orientation: 'portrait',
         scope: baseUrl,
         start_url: baseUrl,
         icons: [
           {
-            src: '/icons/icon-192.png',
+            src: `${baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'}icons/icon-192.png`,
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable'
           },
           {
-            src: '/icons/icon-512.png',
+            src: `${baseUrl.endsWith('/') ? baseUrl : baseUrl + '/'}icons/icon-512.png`,
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
