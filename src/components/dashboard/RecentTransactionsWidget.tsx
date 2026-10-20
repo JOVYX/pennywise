@@ -1,9 +1,8 @@
 import React from 'react';
-import { ReceiptText, ChevronRight, Sparkles } from 'lucide-react';
+import { ReceiptText, ChevronRight } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { formatINR, formatFriendlyDate } from '../../utils/formatters';
 import { CategoryIcon } from '../common/CategoryIcon';
-import { seedSampleData } from '../../db';
 
 export const RecentTransactionsWidget: React.FC = () => {
   const { transactions, categories, setSelectedTab, setIsAddTxOpen, setEditingTx } = useApp();
@@ -44,9 +43,9 @@ export const RecentTransactionsWidget: React.FC = () => {
           </div>
           <h4 className="text-sm font-bold text-white mb-1">Journal Empty</h4>
           <p className="text-xs text-slate-400 mb-3.5 max-w-xs mx-auto">
-            Log campus tapri chai, mess dues, split bills, or load student demonstration data.
+            Log campus tapri chai, mess dues, and daily split bills to start tracking.
           </p>
-          <div className="flex flex-col sm:flex-row gap-2 justify-center">
+          <div className="flex justify-center">
             <button
               type="button"
               onClick={() => {
@@ -56,14 +55,6 @@ export const RecentTransactionsWidget: React.FC = () => {
               className="px-3.5 py-2 rounded bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-sm transition-all active:scale-95"
             >
               + Record Expense
-            </button>
-            <button
-              type="button"
-              onClick={() => seedSampleData()}
-              className="px-3.5 py-2 rounded bg-[#111827] text-slate-300 font-semibold text-xs border border-[#1f293d] hover:bg-[#1f293d] transition-all active:scale-95 flex items-center justify-center gap-1.5"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              Load Demo Ledger
             </button>
           </div>
         </div>

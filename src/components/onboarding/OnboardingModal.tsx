@@ -13,11 +13,11 @@ export const OnboardingModal: React.FC = () => {
   const [step, setStep] = useState<number>(1);
 
   // Form states
-  const [bankBal, setBankBal] = useState('10000');
-  const [walletBal, setWalletBal] = useState('2000');
-  const [cashBal, setCashBal] = useState('500');
-  const [savingsGoalName, setSavingsGoalName] = useState('College Emergency Fund');
-  const [savingsGoalTarget, setSavingsGoalTarget] = useState('20000');
+  const [bankBal, setBankBal] = useState('');
+  const [walletBal, setWalletBal] = useState('');
+  const [cashBal, setCashBal] = useState('');
+  const [savingsGoalName, setSavingsGoalName] = useState('');
+  const [savingsGoalTarget, setSavingsGoalTarget] = useState('');
   const [nextIncomeDate, setNextIncomeDate] = useState('');
 
   if (settings.onboardingCompleted) {
@@ -154,6 +154,7 @@ export const OnboardingModal: React.FC = () => {
                 </label>
                 <input
                   type="number"
+                  placeholder="0"
                   value={bankBal}
                   onChange={(e) => setBankBal(e.target.value)}
                   className="w-full bg-[#0b0f17] border border-[#1f293d] rounded-xl px-3 py-2 text-white font-mono font-bold tabular-nums focus:outline-none focus:border-amber-400/50"
@@ -166,6 +167,7 @@ export const OnboardingModal: React.FC = () => {
                 </label>
                 <input
                   type="number"
+                  placeholder="0"
                   value={walletBal}
                   onChange={(e) => setWalletBal(e.target.value)}
                   className="w-full bg-[#0b0f17] border border-[#1f293d] rounded-xl px-3 py-2 text-white font-mono font-bold tabular-nums focus:outline-none focus:border-amber-400/50"
@@ -178,6 +180,7 @@ export const OnboardingModal: React.FC = () => {
                 </label>
                 <input
                   type="number"
+                  placeholder="0"
                   value={cashBal}
                   onChange={(e) => setCashBal(e.target.value)}
                   className="w-full bg-[#0b0f17] border border-[#1f293d] rounded-xl px-3 py-2 text-white font-mono font-bold tabular-nums focus:outline-none focus:border-amber-400/50"
@@ -220,6 +223,7 @@ export const OnboardingModal: React.FC = () => {
                 <label className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold block mb-1">Goal Name</label>
                 <input
                   type="text"
+                  placeholder="e.g. Emergency Fund"
                   value={savingsGoalName}
                   onChange={(e) => setSavingsGoalName(e.target.value)}
                   className="w-full bg-[#0b0f17] border border-[#1f293d] rounded-xl px-3 py-2 text-white font-medium focus:outline-none focus:border-amber-400/50"
@@ -232,6 +236,7 @@ export const OnboardingModal: React.FC = () => {
                 </label>
                 <input
                   type="number"
+                  placeholder="e.g. 10000"
                   value={savingsGoalTarget}
                   onChange={(e) => setSavingsGoalTarget(e.target.value)}
                   className="w-full bg-[#0b0f17] border border-[#1f293d] rounded-xl px-3 py-2 text-white font-mono font-bold tabular-nums focus:outline-none focus:border-amber-400/50"

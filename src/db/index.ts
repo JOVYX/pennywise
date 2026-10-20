@@ -702,6 +702,7 @@ export async function clearSampleData(): Promise<void> {
   await db.transaction(
     'rw',
     [
+      db.accounts,
       db.transactions,
       db.savingsGoals,
       db.debts,
@@ -730,6 +731,54 @@ export async function clearSampleData(): Promise<void> {
         .filter((r) => r.id.startsWith('demo-') || r.isDemo)
         .map((r) => r.id);
       if (demoRecIds.length) await db.recurringRules.bulkDelete(demoRecIds);
+
+      // Clean up demo accounts
+      const allAccounts = await db.accounts.toArray();
+      const demoAccountIds = allAccounts
+        .filter((a) => a.id.startsWith('demo-') || a.id.startsWith('acc-sbi-student') || a.id.startsWith('acc-paytm-upi') || a.id.startsWith('acc-pocket-cash'))
+        .map((a) => a.id);
+      if (demoAccountIds.length) {
+        await db.accounts.bulkDelete(demoAccountIds);
+      }
+
+      // If no accounts remain, ensure the default 3 clean accounts exist with 0 opening balance
+      const remainingAccounts = await db.accounts.count();
+      if (remainingAccounts === 0) {
+        const now = new Date().toISOString();
+        await db.accounts.bulkAdd([
+          {
+            id: 'acc-primary-bank',
+            name: 'Primary Bank (SBI / HDFC)',
+            type: 'bank',
+            openingBalancePaise: 0,
+            color: '#3b82f6',
+            icon: 'Landmark',
+            isDefault: true,
+            createdAt: now,
+            updatedAt: now
+          },
+          {
+            id: 'acc-upi-wallet',
+            name: 'UPI / Paytm / GPay',
+            type: 'wallet',
+            openingBalancePaise: 0,
+            color: '#10b981',
+            icon: 'Smartphone',
+            createdAt: now,
+            updatedAt: now
+          },
+          {
+            id: 'acc-cash',
+            name: 'Cash in Pocket',
+            type: 'cash',
+            openingBalancePaise: 0,
+            color: '#f59e0b',
+            icon: 'Coins',
+            createdAt: now,
+            updatedAt: now
+          }
+        ]);
+      }
 
       const settings = (await db.settings.get('app_settings'))?.value || DEFAULT_SETTINGS;
       settings.hasSampleData = false;
