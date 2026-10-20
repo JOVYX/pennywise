@@ -19,6 +19,7 @@ import {
 import { calculateMonthlySummary } from '../utils/finance';
 import { getCurrentMonthKey } from '../utils/formatters';
 import { shouldAutoLock, updateLastActive } from '../utils/security';
+import { requestStoragePersistence } from '../utils/storage';
 
 interface AppContextType {
   // Navigation & Month
@@ -97,6 +98,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     initializeDatabase().then(() => setIsDbReady(true));
+    requestStoragePersistence();
   }, []);
 
   // Live queries

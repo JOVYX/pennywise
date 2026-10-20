@@ -24,8 +24,10 @@ import {
   resetAllData,
   db
 } from '../db';
-import { formatINR, rupeesToPaise } from '../utils/formatters';
+import { formatINR, rupeesToPaise, formatBackupAge } from '../utils/formatters';
 import { hashPin, isBiometricsAvailable } from '../utils/security';
+import { downloadOrShareFile } from '../utils/fileExport';
+import { checkStoragePersistence, requestStoragePersistence } from '../utils/storage';
 
 export const SettingsView: React.FC = () => {
   const { settings, updateSettings, accounts, setIsImportStatementOpen } = useApp();
@@ -45,8 +47,12 @@ export const SettingsView: React.FC = () => {
   const [pinStep, setPinStep] = useState<'create' | 'confirm'>('create');
   const [pinError, setPinError] = useState('');
 
+  // Storage Persistence state
+  const [isPersisted, setIsPersisted] = useState(false);
+
   useEffect(() => {
     isBiometricsAvailable().then((res) => setHasBiometrics(res));
+    checkStoragePersistence().then((res) => setIsPersisted(res));
   }, []);
 
   const handleStartSetPin = () => {
@@ -117,41 +123,49 @@ export const SettingsView: React.FC = () => {
     setTimeout(() => setFeedbackMsg(null), 4000);
   };
 
-  // Export JSON
+  // Export JSON (Reliable on iOS standalone PWA via Web Share + fallback)
   const handleExportJson = async () => {
     try {
       const json = await exportDatabaseToJson();
+      const filename = `pennywise-backup-${new Date().toISOString().slice(0, 10)}.json`;
       const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `pennywise-backup-${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast('Backup exported successfully!');
+      await downloadOrShareFile({
+        blob,
+        filename,
+        mimeType: 'application/json'
+      });
+      await updateSettings({ lastBackupDate: new Date().toISOString() });
+      showToast('Backup exported and saved!');
     } catch (err: any) {
       showToast(err?.message || 'Export failed', true);
     }
   };
 
-  // Export CSV
+  // Export CSV (Reliable on iOS standalone PWA via Web Share + fallback)
   const handleExportCsv = async () => {
     try {
       const csv = await exportTransactionsToCsv();
+      const filename = `pennywise-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
       const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `pennywise-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast('CSV spreadsheet downloaded!');
+      await downloadOrShareFile({
+        blob,
+        filename,
+        mimeType: 'text/csv'
+      });
+      showToast('CSV spreadsheet ready!');
     } catch (err: any) {
       showToast(err?.message || 'CSV export failed', true);
+    }
+  };
+
+  // Request storage persistence
+  const handleRequestPersistence = async () => {
+    const granted = await requestStoragePersistence();
+    setIsPersisted(granted);
+    if (granted) {
+      showToast('Storage persistence granted! Data protected.');
+    } else {
+      showToast('Storage persistence not granted by browser.', true);
     }
   };
 
@@ -406,6 +420,38 @@ export const SettingsView: React.FC = () => {
         <h3 className="mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
           DATA & LOCAL BACKUPS
         </h3>
+
+        {/* Backup Status & iOS Persistence Row */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="p-3 rounded-lg bg-[#161e2e] border border-[#28354b] flex flex-col justify-between">
+            <span className="mono text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Last Backup</span>
+            <span className="mono text-xs font-bold text-amber-400 mt-1">
+              {formatBackupAge(settings.lastBackupDate)}
+            </span>
+          </div>
+
+          <div className="p-3 rounded-lg bg-[#161e2e] border border-[#28354b] flex flex-col justify-between">
+            <div className="flex items-center justify-between">
+              <span className="mono text-[10px] text-slate-400 font-semibold uppercase tracking-wider">iOS Storage</span>
+              {isPersisted ? (
+                <span className="mono text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  PERSISTENT
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleRequestPersistence}
+                  className="mono text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/20 transition-colors"
+                >
+                  REQUEST
+                </button>
+              )}
+            </div>
+            <span className="text-[11px] text-slate-300 mt-1">
+              {isPersisted ? 'Granted (Safe from eviction)' : 'Standard Quota'}
+            </span>
+          </div>
+        </div>
 
         {/* Import Bank Statement (CSV / Excel) */}
         <button

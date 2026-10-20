@@ -150,3 +150,19 @@ export function formatMonthName(monthKey: string): string {
   const date = new Date(year, (month || 1) - 1, 1);
   return date.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
 }
+
+/**
+ * Formats ISO backup date into human relative time like "Today", "Yesterday", "3 days ago", or "Never"
+ */
+export function formatBackupAge(isoDate?: string, now = Date.now()): string {
+  if (!isoDate) return 'Never';
+  const timestamp = new Date(isoDate).getTime();
+  if (isNaN(timestamp)) return 'Never';
+  const diffMs = now - timestamp;
+  if (diffMs < 0) return 'Just now';
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  return `${diffDays} days ago`;
+}
+

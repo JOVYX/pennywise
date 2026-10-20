@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import {
   Sparkles,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
+  Smartphone
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { seedSampleData, db } from '../../db';
@@ -113,6 +114,17 @@ export const OnboardingModal: React.FC = () => {
                 <span className="text-slate-400">Storage Architecture:</span>
                 <span className="font-bold text-slate-300">Local-First (IndexedDB)</span>
               </div>
+            </div>
+
+            {/* iOS Storage Partition Callout */}
+            <div className="p-3 bg-[#0b0f17] rounded-xl border border-amber-500/25 text-xs space-y-1">
+              <div className="flex items-center gap-1.5 text-amber-400 font-bold">
+                <Smartphone className="w-3.5 h-3.5" />
+                <span>iPhone Home Screen Note</span>
+              </div>
+              <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
+                Installing to the Home Screen creates an isolated storage area separate from Safari. If you start in Safari, use <strong className="text-white">Export JSON</strong> in Safari and <strong className="text-white">Restore from Backup</strong> in the Home Screen app.
+              </p>
             </div>
 
             <div className="space-y-2 pt-2">
