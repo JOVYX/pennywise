@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, ArrowRightLeft, ArrowDownRight, ArrowUpRight, Check } from 'lucide-react';
+import { X, ArrowRightLeft, ArrowDownRight, ArrowUpRight, Check, Sparkles, Clipboard, MessageSquareText } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { TransactionType, PaymentMethod } from '../../types';
+import { TransactionType, PaymentMethod, ParsedSmsTransaction } from '../../types';
 import { rupeesToPaise, formatINR } from '../../utils/formatters';
+import { parseIndianSms } from '../../utils/smsParser';
 import { CategoryIcon } from '../common/CategoryIcon';
 
 export const TransactionModal: React.FC = () => {
@@ -28,6 +29,11 @@ export const TransactionModal: React.FC = () => {
   const [date, setDate] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [errorMsg, setErrorMsg] = useState<string>('');
+
+  // SMS / UPI Quick Paste State
+  const [isSmsOpen, setIsSmsOpen] = useState<boolean>(false);
+  const [smsText, setSmsText] = useState<string>('');
+  const [parsedSms, setParsedSms] = useState<ParsedSmsTransaction | null>(null);
 
   // Suggestions for Indian students
   const quickMerchants = [
@@ -72,6 +78,49 @@ export const TransactionModal: React.FC = () => {
     }
     setErrorMsg('');
   }, [editingTx, isAddTxOpen, accounts, categories]);
+
+  const handleSmsChange = (text: string) => {
+    setSmsText(text);
+    if (text.trim().length > 10) {
+      const parsed = parseIndianSms(text, categories);
+      setParsedSms(parsed);
+    } else {
+      setParsedSms(null);
+    }
+  };
+
+  const handlePasteClipboard = async () => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.readText) {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          setSmsText(text);
+          const parsed = parseIndianSms(text, categories);
+          setParsedSms(parsed);
+          if (parsed) {
+            applyParsedSms(parsed);
+          }
+        }
+      }
+    } catch {
+      // Clipboard read permissions may be restricted
+    }
+  };
+
+  const applyParsedSms = (parsed: ParsedSmsTransaction) => {
+    setType(parsed.type);
+    setAmountStr((parsed.amountPaise / 100).toString());
+    setMerchant(parsed.merchant);
+    setCategoryId(parsed.categoryId);
+    setPaymentMethod(parsed.paymentMethod);
+    if (parsed.date) {
+      setDate(parsed.date.slice(0, 16));
+    }
+    if (parsed.accountHint) {
+      setNotes(parsed.accountHint);
+    }
+    setIsSmsOpen(false);
+  };
 
   if (!isAddTxOpen) return null;
 
@@ -162,6 +211,76 @@ export const TransactionModal: React.FC = () => {
               {errorMsg}
             </div>
           )}
+
+          {/* SMS / UPI Auto-Fill Banner & Dropdown */}
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={() => setIsSmsOpen(!isSmsOpen)}
+              className="w-full flex items-center justify-between px-3.5 py-2 rounded-xl bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-indigo-500/10 border border-emerald-500/25 text-emerald-400 hover:border-emerald-500/40 transition-all text-xs font-semibold"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <span>Paste Bank / UPI SMS Alert</span>
+              </div>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold">
+                Auto-Fill
+              </span>
+            </button>
+
+            {isSmsOpen && (
+              <div className="p-3 bg-neutral-950 rounded-2xl border border-neutral-800 space-y-2.5 animate-in fade-in duration-150">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-medium text-neutral-400 flex items-center gap-1.5">
+                    <MessageSquareText className="w-3.5 h-3.5 text-neutral-400" />
+                    Paste Bank Alert SMS
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handlePasteClipboard}
+                    className="text-[11px] font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition-colors px-2 py-0.5 rounded-lg bg-emerald-500/10"
+                  >
+                    <Clipboard className="w-3 h-3" />
+                    Paste Clipboard
+                  </button>
+                </div>
+
+                <textarea
+                  value={smsText}
+                  onChange={(e) => handleSmsChange(e.target.value)}
+                  placeholder="e.g. 'Rs. 250.00 debited from A/C **1234 on 20-Oct-26 by UPI to SWIGGY...'"
+                  aria-label="Paste SMS text"
+                  rows={2}
+                  className="w-full p-2.5 rounded-xl bg-neutral-900 border border-neutral-800 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-emerald-500/50 resize-none"
+                />
+
+                {parsedSms && (
+                  <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between">
+                    <div>
+                      <div className="text-xs font-bold text-white flex items-center gap-2">
+                        <span>₹{parsedSms.amountPaise / 100}</span>
+                        <span className="text-[11px] font-medium text-emerald-300">
+                          {parsedSms.merchant}
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-neutral-400 mt-0.5">
+                        {parsedSms.type.toUpperCase()} • {parsedSms.paymentMethod.toUpperCase()}
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => applyParsedSms(parsedSms)}
+                      className="px-3 py-1.5 rounded-lg bg-emerald-500 text-neutral-950 text-xs font-bold flex items-center gap-1 shadow-md hover:bg-emerald-400 active:scale-95 transition-all"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                      Apply
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Type Segmented Control */}
           <div className="grid grid-cols-3 gap-1 bg-neutral-950 p-1 rounded-xl border border-neutral-800/80">

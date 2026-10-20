@@ -121,4 +121,79 @@ describe('Pennywise Full User Flows', () => {
     expect(recorded).toBeDefined();
     expect(recorded?.amountPaise).toBe(15000); // ₹150 = 15000 paise
   });
+
+  it('allows pasting bank SMS to auto-fill transaction modal', async () => {
+    await seedSampleData();
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Available To Spend/i)).toBeInTheDocument();
+    });
+
+    // Open add transaction modal
+    const addBtn = screen.getByRole('button', { name: /add transaction/i });
+    fireEvent.click(addBtn);
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+
+    // Toggle SMS paste panel
+    const smsToggleBtn = screen.getByText(/Paste Bank \/ UPI SMS Alert/i);
+    fireEvent.click(smsToggleBtn);
+
+    // Enter SMS text
+    const textarea = screen.getByLabelText(/Paste SMS text/i);
+    fireEvent.change(textarea, {
+      target: {
+        value: 'Rs. 320.00 debited from A/C **9999 on 20-Oct-26 by UPI to SWIGGY BANGALORE'
+      }
+    });
+
+    // Should detect and show preview with Apply button
+    await waitFor(() => {
+      expect(screen.getByText(/Apply/i)).toBeInTheDocument();
+    });
+
+    const applyBtn = screen.getByText(/Apply/i);
+    fireEvent.click(applyBtn);
+
+    // Inputs should be pre-filled
+    const merchantInput = screen.getByPlaceholderText(/e\.g\. Tapri, Swiggy, Mess/i) as HTMLInputElement;
+    expect(merchantInput.value).toContain('Swiggy');
+  });
+
+  it('allows opening Bill Splitter from Budgets tab and calculating shares', async () => {
+    await seedSampleData();
+
+    render(<App />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Available To Spend/i)).toBeInTheDocument();
+    });
+
+    // Navigate to Budgets tab
+    const budgetsTab = screen.getByRole('button', { name: /budgets/i });
+    fireEvent.click(budgetsTab);
+
+    // Switch to Debts section
+    const debtsSubTab = screen.getByRole('button', { name: /debts/i });
+    fireEvent.click(debtsSubTab);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Debts & Repayments/i)).toBeInTheDocument();
+    });
+
+    // Click 'Split Bill'
+    const splitBillBtn = screen.getByRole('button', { name: /split bill/i });
+    fireEvent.click(splitBillBtn);
+
+    // Modal should appear
+    await waitFor(() => {
+      expect(screen.getByText(/Split with Friends/i)).toBeInTheDocument();
+      expect(screen.getByText(/Save to Pennywise/i)).toBeInTheDocument();
+    });
+  });
 });
+

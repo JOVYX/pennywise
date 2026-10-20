@@ -7,6 +7,18 @@
 ## 📱 Features & Highlights
 
 - **⚡ Lightning-Fast Expense Logging**: Record daily expenses in seconds with quick-select student presets (*Campus Tapri, Canteen, Mess Bill, Blinkit, Metro Recharge, Swiggy*).
+- **📋 Indian Bank SMS & UPI Auto-Fill**:
+  - Automatically parse debit/credit alert messages from HDFC, SBI, ICICI, Axis, Paytm, PhonePe, Google Pay, and CRED.
+  - Extracts exact paise amount, merchant name, payment method, date, and intelligently auto-categorizes the expense in 1 tap.
+- **🤝 Roommate & Friend Bill Splitter**:
+  - Splitwise-style group bill splitter built for flatmates and campus trips.
+  - Split expenses **equally**, **by shares**, or with **exact custom amounts** with guaranteed zero-loss paisa rounding.
+  - Automatically creates personal debt/IOU records into IndexedDB and logs your share.
+  - Generates WhatsApp-ready formatted breakdown text for instant group chat sharing.
+- **🔒 App Lock & Privacy (PIN + Face ID)**:
+  - Secure 4-digit passcode lock with SHA-256 hashing.
+  - WebAuthn Biometric unlock support (Face ID / Touch ID / Fingerprint).
+  - Configurable auto-lock delay (Immediate, 1 min, 5 min, 15 min) and brute-force lockout protection.
 - **🇮🇳 Built for Indian Financial Life**:
   - Default currency in Indian Rupees (**INR ₹**) with standard Indian grouping (*₹1,25,000* Lakhs & Crores formatting).
   - Exact integer **paise** storage to eliminate JavaScript floating-point rounding quirks.

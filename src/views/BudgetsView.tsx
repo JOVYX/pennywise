@@ -6,7 +6,8 @@ import {
   CalendarClock,
   Plus,
   AlertTriangle,
-  X
+  X,
+  Users
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useApp } from '../context/AppContext';
@@ -27,7 +28,8 @@ export const BudgetsView: React.FC = () => {
     accounts,
     updateSavingsGoalAllocation,
     recordDebtPayment,
-    markRecurringProcessed
+    markRecurringProcessed,
+    setIsSplitBillOpen
   } = useApp();
 
   const [activeSection, setActiveSection] = useState<'budget' | 'goals' | 'debts' | 'recurring'>('budget');
@@ -463,14 +465,24 @@ export const BudgetsView: React.FC = () => {
             <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
               Debts & Repayments
             </h3>
-            <button
-              type="button"
-              onClick={() => setIsAddDebtOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-blue-500 text-white font-bold text-xs flex items-center gap-1 shadow-sm"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              Add Debt
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsSplitBillOpen(true)}
+                className="px-3 py-1.5 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30 hover:bg-purple-600/30 font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all"
+              >
+                <Users className="w-3.5 h-3.5" />
+                Split Bill
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsAddDebtOpen(true)}
+                className="px-3 py-1.5 rounded-xl bg-blue-500 text-white font-bold text-xs flex items-center gap-1 shadow-sm"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                Add Debt
+              </button>
+            </div>
           </div>
 
           <div className="space-y-3">

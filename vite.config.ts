@@ -4,8 +4,10 @@ import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath, URL } from 'node:url';
 
-// https://vitejs.dev/config/
+const baseUrl = process.env.BASE_URL || '/';
+
 export default defineConfig({
+  base: baseUrl,
   plugins: [
     react(),
     tailwindcss(),
@@ -20,8 +22,8 @@ export default defineConfig({
         background_color: '#090d16',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/',
-        start_url: '/',
+        scope: baseUrl,
+        start_url: baseUrl,
         icons: [
           {
             src: '/icons/icon-192.png',

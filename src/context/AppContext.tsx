@@ -18,6 +18,7 @@ import {
 } from '../types';
 import { calculateMonthlySummary } from '../utils/finance';
 import { getCurrentMonthKey } from '../utils/formatters';
+import { shouldAutoLock, updateLastActive } from '../utils/security';
 
 interface AppContextType {
   // Navigation & Month
@@ -31,6 +32,14 @@ interface AppContextType {
   setIsAddTxOpen: (open: boolean) => void;
   editingTx: Transaction | null;
   setEditingTx: (tx: Transaction | null) => void;
+
+  // Bill Splitter Modal
+  isSplitBillOpen: boolean;
+  setIsSplitBillOpen: (open: boolean) => void;
+
+  // Security App Lock
+  isAppLocked: boolean;
+  setIsAppLocked: (locked: boolean) => void;
 
   // Data from IndexedDB
   accounts: Account[];
@@ -75,6 +84,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [selectedTab, setSelectedTab] = useState<'home' | 'transactions' | 'budgets' | 'insights' | 'settings'>('home');
   const [isAddTxOpen, setIsAddTxOpen] = useState<boolean>(false);
   const [editingTx, setEditingTx] = useState<Transaction | null>(null);
+  const [isSplitBillOpen, setIsSplitBillOpen] = useState<boolean>(false);
+  const [isAppLocked, setIsAppLocked] = useState<boolean>(false);
+  const [hasCheckedLockInitial, setHasCheckedLockInitial] = useState<boolean>(false);
   const [isDbReady, setIsDbReady] = useState<boolean>(false);
 
   useEffect(() => {
@@ -116,6 +128,34 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     }
   }, [settings.theme]);
+
+  // Cold launch lock check
+  useEffect(() => {
+    if (!hasCheckedLockInitial && isDbReady) {
+      if (settings.security?.pinEnabled && settings.security?.pinHash) {
+        setIsAppLocked(true);
+      }
+      setHasCheckedLockInitial(true);
+    }
+  }, [hasCheckedLockInitial, isDbReady, settings.security]);
+
+  // Visibility change auto-lock (e.g. backgrounding on iOS)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        if (settings.security?.pinEnabled && settings.security?.pinHash) {
+          if (shouldAutoLock(settings.security.autoLockMinutes ?? 0)) {
+            setIsAppLocked(true);
+          }
+        }
+      } else if (document.visibilityState === 'hidden') {
+        updateLastActive();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [settings.security]);
 
   const currentBudget = useMemo(() => {
     return budgets.find((b) => b.month === currentMonth);
@@ -303,6 +343,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setIsAddTxOpen,
         editingTx,
         setEditingTx,
+        isSplitBillOpen,
+        setIsSplitBillOpen,
+        isAppLocked,
+        setIsAppLocked,
         accounts,
         categories,
         transactions,

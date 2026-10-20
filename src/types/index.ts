@@ -3,7 +3,7 @@ export type PaymentMethod = 'upi' | 'cash' | 'card' | 'netbanking' | 'other';
 export type CategoryClassification = 'essential' | 'discretionary';
 export type AccountType = 'bank' | 'cash' | 'wallet' | 'other';
 export type GoalPriority = 'high' | 'medium' | 'low';
-export type DebtType = 'personal_debt' | 'credit_card' | 'bnpl' | 'loan';
+export type DebtType = 'personal_debt' | 'credit_card' | 'bnpl' | 'loan' | 'lent_to_friend';
 export type RecurringFrequency = 'daily' | 'weekly' | 'monthly' | 'custom';
 export type BudgetAllowanceStrategy = 'conservative' | 'balanced' | 'flexible';
 
@@ -135,6 +135,13 @@ export interface BudgetConfig {
   warningThresholds: [number, number, number]; // e.g. [70, 85, 100]
 }
 
+export interface SecuritySettings {
+  pinEnabled: boolean;
+  pinHash?: string;
+  biometricEnabled?: boolean;
+  autoLockMinutes?: number; // 0 = immediate, 1, 5, 15
+}
+
 export interface AppSettings {
   currency: string;
   currencySymbol: string;
@@ -146,6 +153,7 @@ export interface AppSettings {
   onboardingCompleted: boolean;
   lastBackupDate?: string;
   hasSampleData?: boolean;
+  security?: SecuritySettings;
 }
 
 export interface FinancialSummary {
@@ -161,4 +169,37 @@ export interface FinancialSummary {
   savingsRatePercentage: number;
   budgetUtilizationPercentage: number;
   remainingMonthlyBudgetPaise: number;
+}
+
+export type SplitMethod = 'equal' | 'exact' | 'shares';
+
+export interface SplitParticipant {
+  id: string;
+  name: string;
+  isSelf: boolean;
+  amountPaise: number;
+  shares?: number;
+}
+
+export interface BillSplitPlan {
+  title: string;
+  totalAmountPaise: number;
+  payerName: string;
+  isPayerSelf: boolean;
+  method: SplitMethod;
+  participants: SplitParticipant[];
+  categoryId: string;
+  date: string;
+}
+
+export interface ParsedSmsTransaction {
+  type: TransactionType;
+  amountPaise: number;
+  merchant: string;
+  categoryId: string;
+  paymentMethod: PaymentMethod;
+  date: string;
+  confidence: 'high' | 'medium' | 'low';
+  accountHint?: string;
+  rawText: string;
 }

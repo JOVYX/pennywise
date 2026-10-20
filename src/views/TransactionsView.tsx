@@ -4,7 +4,8 @@ import {
   Trash2,
   Copy,
   Edit2,
-  X
+  X,
+  Users
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { Transaction } from '../types';
@@ -20,7 +21,8 @@ export const TransactionsView: React.FC = () => {
     setIsAddTxOpen,
     setEditingTx,
     saveTransaction,
-    deleteTransaction
+    deleteTransaction,
+    setIsSplitBillOpen
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -128,25 +130,35 @@ export const TransactionsView: React.FC = () => {
     <div className="space-y-3 px-4 py-3 max-w-md mx-auto">
       {/* Top Search & Filter Bar */}
       <div className="space-y-2">
-        <div className="relative">
-          <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3" />
-          <input
-            id="input-search-transactions"
-            type="text"
-            placeholder="Search merchant, notes, category..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-white placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500/50"
-          />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-3 text-neutral-400 hover:text-white"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3" />
+            <input
+              id="input-search-transactions"
+              type="text"
+              placeholder="Search merchant, notes, category..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl pl-10 pr-4 py-2.5 text-xs text-white placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500/50"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-3 text-neutral-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsSplitBillOpen(true)}
+            title="Split Bill with Friends"
+            className="p-2.5 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 hover:bg-purple-500/20 active:scale-95 transition-all shrink-0 flex items-center justify-center"
+          >
+            <Users className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Filter Pills */}

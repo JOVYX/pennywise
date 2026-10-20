@@ -9,6 +9,8 @@ import { InsightsView } from './views/InsightsView';
 import { SettingsView } from './views/SettingsView';
 import { TransactionModal } from './components/transactions/TransactionModal';
 import { OnboardingModal } from './components/onboarding/OnboardingModal';
+import { BillSplitterModal } from './components/splitter/BillSplitterModal';
+import { LockScreen } from './components/security/LockScreen';
 
 const AppContent: React.FC = () => {
   const { selectedTab, isLoading } = useApp();
@@ -46,7 +48,9 @@ const AppContent: React.FC = () => {
 
         {/* Global Modals */}
         <TransactionModal />
+        <BillSplitterModal />
         <OnboardingModal />
+        <LockScreen />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Download,
   Upload,
@@ -9,7 +9,10 @@ import {
   Smartphone,
   Plus,
   X,
-  AlertTriangle
+  AlertTriangle,
+  Lock,
+  Fingerprint,
+  KeyRound
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import {
@@ -22,6 +25,7 @@ import {
   db
 } from '../db';
 import { formatINR, rupeesToPaise } from '../utils/formatters';
+import { hashPin, isBiometricsAvailable } from '../utils/security';
 
 export const SettingsView: React.FC = () => {
   const { settings, updateSettings, accounts } = useApp();
@@ -32,6 +36,81 @@ export const SettingsView: React.FC = () => {
   const [newAccName, setNewAccName] = useState('');
   const [newAccType, setNewAccType] = useState<'bank' | 'wallet' | 'cash'>('bank');
   const [newAccBalStr, setNewAccBalStr] = useState('0');
+
+  // Security / PIN state
+  const [hasBiometrics, setHasBiometrics] = useState(false);
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+  const [pinInput, setPinInput] = useState('');
+  const [pinConfirm, setPinConfirm] = useState('');
+  const [pinStep, setPinStep] = useState<'create' | 'confirm'>('create');
+  const [pinError, setPinError] = useState('');
+
+  useEffect(() => {
+    isBiometricsAvailable().then((res) => setHasBiometrics(res));
+  }, []);
+
+  const handleStartSetPin = () => {
+    setPinInput('');
+    setPinConfirm('');
+    setPinStep('create');
+    setPinError('');
+    setIsPinModalOpen(true);
+  };
+
+  const handleSavePin = async () => {
+    if (pinInput.length !== 4) {
+      setPinError('Passcode must be 4 digits');
+      return;
+    }
+    if (pinInput !== pinConfirm) {
+      setPinError('Passcodes do not match. Try again.');
+      return;
+    }
+
+    const hash = await hashPin(pinInput);
+    await updateSettings({
+      security: {
+        pinEnabled: true,
+        pinHash: hash,
+        biometricEnabled: settings.security?.biometricEnabled ?? false,
+        autoLockMinutes: settings.security?.autoLockMinutes ?? 0
+      }
+    });
+
+    setIsPinModalOpen(false);
+    showToast('Passcode protection activated!');
+  };
+
+  const handleDisablePin = async () => {
+    await updateSettings({
+      security: {
+        ...(settings.security || {}),
+        pinEnabled: false
+      }
+    });
+    showToast('Passcode protection turned off.');
+  };
+
+  const handleToggleBiometrics = async () => {
+    const current = settings.security?.biometricEnabled ?? false;
+    await updateSettings({
+      security: {
+        ...(settings.security || { pinEnabled: true }),
+        biometricEnabled: !current
+      }
+    });
+    showToast(!current ? 'Biometric unlock enabled' : 'Biometric unlock disabled');
+  };
+
+  const handleAutoLockChange = async (minutes: number) => {
+    await updateSettings({
+      security: {
+        ...(settings.security || { pinEnabled: true }),
+        autoLockMinutes: minutes
+      }
+    });
+    showToast('Auto-lock interval updated');
+  };
 
   const showToast = (text: string, error = false) => {
     setFeedbackMsg({ text, error });
@@ -256,6 +335,106 @@ export const SettingsView: React.FC = () => {
         </div>
       </div>
 
+      {/* App Lock & Security */}
+      <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-lg space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+              <Lock className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-300">
+                App Lock & Security
+              </h3>
+              <p className="text-[10px] text-neutral-500">Protect financial records with PIN & Face ID</p>
+            </div>
+          </div>
+        </div>
+
+        {/* PIN Enable / Disable Toggle */}
+        <div className="flex items-center justify-between p-3 rounded-2xl bg-neutral-950 border border-neutral-800/80">
+          <div>
+            <span className="text-xs font-bold text-white block">4-Digit Passcode</span>
+            <span className="text-[10px] text-neutral-400">
+              {settings.security?.pinEnabled ? 'Passcode lock active' : 'No passcode set'}
+            </span>
+          </div>
+
+          {settings.security?.pinEnabled ? (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleStartSetPin}
+                className="px-2.5 py-1 text-[11px] font-semibold bg-neutral-800 text-neutral-300 hover:text-white rounded-lg transition-colors"
+              >
+                Change
+              </button>
+              <button
+                type="button"
+                onClick={handleDisablePin}
+                className="px-2.5 py-1 text-[11px] font-semibold bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 rounded-lg transition-colors"
+              >
+                Turn Off
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={handleStartSetPin}
+              className="px-3 py-1.5 text-xs font-bold bg-emerald-500 text-neutral-950 rounded-xl hover:bg-emerald-400 transition-colors shadow-sm"
+            >
+              Turn On
+            </button>
+          )}
+        </div>
+
+        {settings.security?.pinEnabled && (
+          <div className="space-y-3 pt-1">
+            {/* Biometric Toggle if supported */}
+            {hasBiometrics && (
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-neutral-950 border border-neutral-800/80">
+                <div className="flex items-center gap-2.5">
+                  <Fingerprint className="w-4 h-4 text-emerald-400" />
+                  <div>
+                    <span className="text-xs font-bold text-white block">Face ID / Biometrics</span>
+                    <span className="text-[10px] text-neutral-400">Unlock instantly without typing PIN</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleToggleBiometrics}
+                  className={`w-10 h-6 rounded-full transition-colors relative ${
+                    settings.security?.biometricEnabled ? 'bg-emerald-500' : 'bg-neutral-800'
+                  }`}
+                >
+                  <div
+                    className={`w-4 h-4 rounded-full bg-white transition-transform absolute top-1 ${
+                      settings.security?.biometricEnabled ? 'right-1' : 'left-1'
+                    }`}
+                  />
+                </button>
+              </div>
+            )}
+
+            {/* Auto Lock Timer */}
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-neutral-950 border border-neutral-800/80">
+              <span className="text-xs font-bold text-white">Auto-Lock Delay</span>
+              <select
+                value={settings.security?.autoLockMinutes ?? 0}
+                onChange={(e) => handleAutoLockChange(parseInt(e.target.value))}
+                className="px-2.5 py-1 text-xs font-semibold bg-neutral-900 border border-neutral-700 text-white rounded-lg focus:outline-none"
+              >
+                <option value={0}>Immediately</option>
+                <option value={1}>After 1 minute</option>
+                <option value={5}>After 5 minutes</option>
+                <option value={15}>After 15 minutes</option>
+              </select>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Backup, Restore & Data */}
       <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 shadow-lg space-y-3">
         <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400">
@@ -476,6 +655,78 @@ export const SettingsView: React.FC = () => {
               >
                 Yes, Reset All
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Set Passcode */}
+      {isPinModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-xs bg-neutral-900 border border-neutral-800 rounded-3xl p-6 shadow-2xl text-center space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center">
+              <KeyRound className="w-6 h-6" />
+            </div>
+
+            <div>
+              <h3 className="text-base font-bold text-white">
+                {pinStep === 'create' ? 'Create Passcode' : 'Confirm Passcode'}
+              </h3>
+              <p className="text-xs text-neutral-400 mt-1">
+                {pinStep === 'create'
+                  ? 'Enter a 4-digit passcode to lock Pennywise'
+                  : 'Re-enter your 4 digits to confirm'}
+              </p>
+            </div>
+
+            <div className="flex justify-center">
+              <input
+                type="password"
+                maxLength={4}
+                pattern="[0-9]*"
+                inputMode="numeric"
+                autoFocus
+                value={pinStep === 'create' ? pinInput : pinConfirm}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, '').slice(0, 4);
+                  if (pinStep === 'create') {
+                    setPinInput(val);
+                    if (val.length === 4) {
+                      setPinStep('confirm');
+                      setPinError('');
+                    }
+                  } else {
+                    setPinConfirm(val);
+                  }
+                }}
+                placeholder="••••"
+                className="w-36 text-center tracking-[0.5em] text-2xl font-bold bg-neutral-950 border border-neutral-800 rounded-2xl py-2.5 text-white focus:outline-none focus:border-emerald-500"
+              />
+            </div>
+
+            {pinError && (
+              <p className="text-xs text-rose-400 font-semibold animate-in fade-in">{pinError}</p>
+            )}
+
+            <div className="flex gap-2 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsPinModalOpen(false)}
+                className="flex-1 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-neutral-300 text-xs font-semibold transition-colors"
+              >
+                Cancel
+              </button>
+
+              {pinStep === 'confirm' && (
+                <button
+                  type="button"
+                  onClick={handleSavePin}
+                  disabled={pinConfirm.length !== 4}
+                  className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-neutral-950 text-xs font-bold transition-all disabled:opacity-50"
+                >
+                  Confirm PIN
+                </button>
+              )}
             </div>
           </div>
         </div>
