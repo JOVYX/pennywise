@@ -6,7 +6,8 @@ import {
   Trash2,
   Share2,
   Check,
-  Calculator
+  Calculator,
+  AlertCircle
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { SplitMethod } from '../../types';
@@ -43,6 +44,24 @@ export const BillSplitterModal: React.FC = () => {
   const splitResult = useMemo(() => {
     return calculateBillSplit(totalPaise, participants, method);
   }, [totalPaise, participants, method]);
+
+  const hasExactDiscrepancy = method === 'exact' && splitResult.remainderPaise !== 0;
+
+  const handleSelectMethod = (newMethod: SplitMethod) => {
+    setMethod(newMethod);
+    if (newMethod === 'exact') {
+      const equalSplit = calculateBillSplit(totalPaise, participants, 'equal');
+      setParticipants((prev) =>
+        prev.map((p) => {
+          const calculated = equalSplit.participants.find((cp) => cp.id === p.id);
+          return {
+            ...p,
+            exactPaise: p.exactPaise !== undefined ? p.exactPaise : (calculated?.amountPaise ?? 0)
+          };
+        })
+      );
+    }
+  };
 
   const isPayerSelf = payerId === 'self';
   const payerName = isPayerSelf
@@ -88,6 +107,7 @@ export const BillSplitterModal: React.FC = () => {
   };
 
   const handleShareWhatsApp = async () => {
+    if (hasExactDiscrepancy) return;
     try {
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(settlement.shareableSummary);
@@ -103,7 +123,7 @@ export const BillSplitterModal: React.FC = () => {
   };
 
   const handleRecordToPennywise = async () => {
-    if (totalPaise <= 0) return;
+    if (totalPaise <= 0 || hasExactDiscrepancy) return;
 
     const now = new Date().toISOString();
     const defaultAcc = accounts.find((a) => a.isDefault) || accounts[0];
@@ -266,7 +286,7 @@ export const BillSplitterModal: React.FC = () => {
                 <button
                   key={m}
                   type="button"
-                  onClick={() => setMethod(m)}
+                  onClick={() => handleSelectMethod(m)}
                   className={`py-1.5 text-xs font-mono font-medium rounded-lg capitalize transition-all ${
                     method === m
                       ? 'bg-[#161e2e] text-amber-400 border border-[#1f293d] font-semibold'
@@ -329,9 +349,38 @@ export const BillSplitterModal: React.FC = () => {
                       </div>
                     )}
 
-                    <span className="text-xs font-mono font-semibold text-white tabular-nums">
-                      {formatINR(p.amountPaise)}
-                    </span>
+                    {/* Custom ₹ input if method === 'exact' */}
+                    {method === 'exact' ? (
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] font-mono text-slate-500 font-bold">₹</span>
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          min="0"
+                          step="any"
+                          value={
+                            participants.find((item) => item.id === p.id)?.exactPaise !== undefined
+                              ? (participants.find((item) => item.id === p.id)!.exactPaise! / 100).toString()
+                              : ''
+                          }
+                          placeholder="0"
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const paise = val === '' ? 0 : rupeesToPaise(val);
+                            setParticipants((prev) =>
+                              prev.map((item) =>
+                                item.id === p.id ? { ...item, exactPaise: Math.max(0, paise) } : item
+                              )
+                            );
+                          }}
+                          className="w-20 px-2 py-1 text-right bg-[#161e2e] border border-[#1f293d] font-mono text-xs font-semibold text-white rounded-lg focus:outline-none focus:border-amber-400"
+                        />
+                      </div>
+                    ) : (
+                      <span className="text-xs font-mono font-semibold text-white tabular-nums">
+                        {formatINR(p.amountPaise)}
+                      </span>
+                    )}
 
                     {!p.isSelf && (
                       <button
@@ -374,6 +423,37 @@ export const BillSplitterModal: React.FC = () => {
             </div>
           </div>
 
+          {/* Discrepancy Banner for Custom ₹ Splits */}
+          {method === 'exact' && (
+            <div
+              className={`p-3 rounded-xl border text-xs flex items-center justify-between ${
+                splitResult.remainderPaise === 0
+                  ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                  : splitResult.remainderPaise > 0
+                  ? 'bg-amber-500/10 border-amber-500/20 text-amber-300'
+                  : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span className="font-medium">
+                  {splitResult.remainderPaise === 0 && 'Allocated sum matches bill total exactly.'}
+                  {splitResult.remainderPaise > 0 &&
+                    `Remaining to allocate: ${formatINR(splitResult.remainderPaise)}`}
+                  {splitResult.remainderPaise < 0 &&
+                    `Over-allocated by: ${formatINR(Math.abs(splitResult.remainderPaise))}`}
+                </span>
+              </div>
+              <span className="font-mono font-bold tabular-nums">
+                {splitResult.remainderPaise === 0
+                  ? '₹0 diff'
+                  : splitResult.remainderPaise > 0
+                  ? `-${formatINR(splitResult.remainderPaise)}`
+                  : `+${formatINR(Math.abs(splitResult.remainderPaise))}`}
+              </span>
+            </div>
+          )}
+
           {/* Settlement Summary Card */}
           <div className="p-3.5 rounded-xl bg-[#0b0f17] border border-[#1f293d] space-y-2">
             <div className="flex items-center justify-between text-xs">
@@ -406,7 +486,8 @@ export const BillSplitterModal: React.FC = () => {
           <button
             type="button"
             onClick={handleShareWhatsApp}
-            className="py-2.5 px-3 rounded-xl bg-[#161e2e] hover:bg-[#1f293d] active:scale-95 text-xs font-medium text-slate-200 flex items-center justify-center gap-2 transition-all border border-[#1f293d]"
+            disabled={hasExactDiscrepancy}
+            className="py-2.5 px-3 rounded-xl bg-[#161e2e] hover:bg-[#1f293d] active:scale-95 text-xs font-medium text-slate-200 flex items-center justify-center gap-2 transition-all border border-[#1f293d] disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {copySuccess ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
             {copySuccess ? 'Copied Link!' : 'WhatsApp / Share'}
@@ -415,8 +496,8 @@ export const BillSplitterModal: React.FC = () => {
           <button
             type="button"
             onClick={handleRecordToPennywise}
-            disabled={totalPaise <= 0 || saveSuccess}
-            className="py-2.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 active:scale-95 text-xs font-bold text-black flex items-center justify-center gap-2 transition-all shadow-md disabled:opacity-40"
+            disabled={totalPaise <= 0 || saveSuccess || hasExactDiscrepancy}
+            className="py-2.5 px-3 rounded-xl bg-amber-400 hover:bg-amber-300 active:scale-95 text-xs font-bold text-black flex items-center justify-center gap-2 transition-all shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {saveSuccess ? (
               <>

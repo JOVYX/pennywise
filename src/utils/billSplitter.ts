@@ -24,6 +24,8 @@ export interface SettlementBreakdown {
     notes: string;
   }>;
   shareableSummary: string;
+  discrepancyPaise?: number;
+  isValid?: boolean;
 }
 
 /**
@@ -95,10 +97,11 @@ export function calculateBillSplit(
       .map((p, idx) => ({ idx, shares: p.shares }))
       .sort((a, b) => b.shares - a.shares);
 
-    for (const item of sortedIndices) {
-      if (remainder <= 0) break;
-      preliminary[item.idx].amountPaise += 1;
+    let idx = 0;
+    while (remainder > 0 && sortedIndices.length > 0) {
+      preliminary[sortedIndices[idx % sortedIndices.length].idx].amountPaise += 1;
       remainder -= 1;
+      idx++;
     }
 
     return { participants: preliminary, remainderPaise: 0 };
@@ -107,7 +110,7 @@ export function calculateBillSplit(
   // Exact custom amounts
   let currentSum = 0;
   const computed = participants.map((p) => {
-    const amount = p.exactPaise ?? 0;
+    const amount = Math.max(0, p.exactPaise ?? 0);
     currentSum += amount;
     return {
       id: p.id,
@@ -181,10 +184,16 @@ export function buildSplitSettlement(params: {
     participants
   });
 
+  const allocatedTotal = participants.reduce((sum, p) => sum + p.amountPaise, 0);
+  const discrepancyPaise = totalPaise - allocatedTotal;
+  const isValid = discrepancyPaise === 0;
+
   return {
     userNetExpensePaise: userPart.amountPaise,
     debtsToCreate,
-    shareableSummary
+    shareableSummary,
+    discrepancyPaise,
+    isValid
   };
 }
 

@@ -19,9 +19,15 @@ export const BalanceCard: React.FC = () => {
             <span className="mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
               AVAILABLE TO SPEND
             </span>
-            <span className="mono text-[9px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
-              CONFIRMED
-            </span>
+            {financialSummary.isOvercommitted ? (
+              <span className="mono text-[9px] font-semibold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 rounded">
+                OVER-COMMITTED
+              </span>
+            ) : (
+              <span className="mono text-[9px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded">
+                CONFIRMED
+              </span>
+            )}
           </div>
           <button
             type="button"
@@ -43,9 +49,15 @@ export const BalanceCard: React.FC = () => {
               })}
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            Zero-risk cash reserve ready for immediate daily expenditure
-          </p>
+          {financialSummary.isOvercommitted ? (
+            <p className="text-xs text-rose-400 mt-1 font-medium">
+              Allocations exceed cash assets by {formatINR(financialSummary.overcommittedPaise)}. Savings goals or pending bills exceed current vault funds.
+            </p>
+          ) : (
+            <p className="text-xs text-slate-400 mt-1">
+              Zero-risk cash reserve ready for immediate daily expenditure
+            </p>
+          )}
         </div>
 
         {/* Expandable Accounting Breakdown Drawer */}

@@ -163,6 +163,8 @@ export interface FinancialSummary {
   totalAllocatedToSavingsPaise: number;
   reservedForBillsAndDebtPaise: number;
   availableToSpendPaise: number;
+  isOvercommitted: boolean;
+  overcommittedPaise: number;
   expectedFutureIncomeThisMonthPaise: number;
   essentialExpensesThisMonthPaise: number;
   discretionaryExpensesThisMonthPaise: number;

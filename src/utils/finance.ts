@@ -160,10 +160,11 @@ export function calculateMonthlySummary(params: {
   }
 
   // 5. Available to spend: Cash that is NOT allocated to savings goals or reserved for pending bills
-  const availableToSpendPaise = Math.max(
-    0,
-    actualTotalBalancePaise - totalAllocatedToSavingsPaise - reservedForBillsAndDebtPaise
-  );
+  const netSpendablePaise =
+    actualTotalBalancePaise - totalAllocatedToSavingsPaise - reservedForBillsAndDebtPaise;
+  const isOvercommitted = netSpendablePaise < 0;
+  const overcommittedPaise = isOvercommitted ? Math.abs(netSpendablePaise) : 0;
+  const availableToSpendPaise = Math.max(0, netSpendablePaise);
 
   // 6. Expected future income this month
   let expectedFutureIncomeThisMonthPaise = 0;
@@ -207,6 +208,8 @@ export function calculateMonthlySummary(params: {
     totalAllocatedToSavingsPaise,
     reservedForBillsAndDebtPaise,
     availableToSpendPaise,
+    isOvercommitted,
+    overcommittedPaise,
     expectedFutureIncomeThisMonthPaise,
     essentialExpensesThisMonthPaise,
     discretionaryExpensesThisMonthPaise,
@@ -239,26 +242,43 @@ export function calculateDailyAllowance(params: {
     currentDate = new Date()
   } = params;
 
+  const validCurrentDate =
+    currentDate instanceof Date && !isNaN(currentDate.getTime()) ? currentDate : new Date();
+
   // Determine days remaining until next income or end of current month
   let targetDate: Date;
   let hasTargetIncomeDate = false;
 
   if (nextExpectedIncomeDate) {
     const parsed = new Date(nextExpectedIncomeDate);
-    if (!isNaN(parsed.getTime()) && parsed > currentDate) {
+    if (!isNaN(parsed.getTime()) && parsed > validCurrentDate) {
       targetDate = parsed;
       hasTargetIncomeDate = true;
     } else {
       // Default to end of current month
-      targetDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59);
+      targetDate = new Date(
+        validCurrentDate.getFullYear(),
+        validCurrentDate.getMonth() + 1,
+        0,
+        23,
+        59,
+        59
+      );
     }
   } else {
     // End of current month
-    targetDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0, 23, 59, 59);
+    targetDate = new Date(
+      validCurrentDate.getFullYear(),
+      validCurrentDate.getMonth() + 1,
+      0,
+      23,
+      59,
+      59
+    );
   }
 
   const msPerDay = 1000 * 60 * 60 * 24;
-  const daysDiff = Math.ceil((targetDate.getTime() - currentDate.getTime()) / msPerDay);
+  const daysDiff = Math.ceil((targetDate.getTime() - validCurrentDate.getTime()) / msPerDay);
   const daysRemaining = Math.max(1, daysDiff);
 
   // Strategy safety cushion:
@@ -269,7 +289,7 @@ export function calculateDailyAllowance(params: {
   const multiplier = (100 - cushionPercent) / 100;
 
   // Cash limit vs Budget limit: Daily limit should respect both available spendable cash and budget!
-  let baseFundPaise = availableToSpendPaise;
+  let baseFundPaise = Math.max(0, availableToSpendPaise);
   if (remainingMonthlyBudgetPaise > 0 && remainingMonthlyBudgetPaise < baseFundPaise) {
     baseFundPaise = remainingMonthlyBudgetPaise;
   }
