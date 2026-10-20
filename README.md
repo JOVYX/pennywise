@@ -163,3 +163,128 @@ Pennywise keeps your financial data 100% private on your own device:
 4. **Savings Rate**:
    $$\text{Savings Rate} = \max\left(0, \min\left(100, \frac{\text{Income} - \text{Expenses}}{\text{Income}} \times 100\right)\right)$$
    *(Evaluates to $0\%$ when income is zero to prevent division anomalies).*
+
+---
+
+## 🌐 Deployment Guide
+
+### Cloudflare Pages (Recommended)
+Pennywise includes pre-configured `wrangler.toml`, `public/_headers` (security headers & PWA caching rules), and `public/_routes.json` (SPA client-side routing).
+1. Connect your repository to **Cloudflare Pages**.
+2. Set **Build command**: `npm run build`
+3. Set **Build output directory**: `dist`
+4. Deploy!
+
+### Vercel
+1. Import repository on Vercel.
+2. Select framework preset: **Vite**.
+3. Build command: `npm run build`, output: `dist`.
+4. Deploy.
+
+### GitHub Pages
+1. Set the base path to your repository name using the `BASE_URL` environment variable:
+   ```bash
+   BASE_URL=/pennywise/ npm run build
+   ```
+2. Deploy the generated `dist/` directory via the standard `actions/deploy-pages` workflow.
+
+---
+
+## 🏗️ Architecture Overview
+
+### Folder Structure
+```text
+pennywise/
+├── e2e/                     # Playwright end-to-end smoke test suite (iOS/WebKit & Chromium)
+├── public/                  # PWA icons, manifest, _headers, _routes.json
+├── src/
+│   ├── components/          # Reusable UI widgets & domain modals
+│   │   ├── common/          # Category icons, badges
+│   │   ├── dashboard/       # Balance card, daily allowance, charts, insights, backup banner
+│   │   ├── importer/        # Bank statement parsing (CSV & Excel .xlsx)
+│   │   ├── layout/          # Header, BottomNav navigation shell
+│   │   ├── onboarding/      # First-launch onboarding modal & balance wizard
+│   │   ├── security/        # LockScreen PIN & biometric verification
+│   │   ├── splitter/        # BillSplitterModal with zero-loss paise split
+│   │   └── transactions/    # TransactionModal with SMS paste & auto-fill
+│   ├── context/             # AppContext & reactive Dexie live queries (useLiveQuery)
+│   ├── data/                # Default Indian student categories & seed data
+│   ├── db/                  # Dexie.js database schema versions (v1 -> v2) & migrations
+│   ├── types/               # Strict TypeScript domain interfaces
+│   ├── utils/               # Pure financial formulas, security, formatters, storage
+│   └── views/               # Dashboard, Transactions, Budgets, Insights, Settings
+└── tests/                   # Vitest unit, integration, and fast-check property test suites
+```
+
+### Data Flow
+```text
+┌─────────────────┐       ┌─────────────────┐       ┌──────────────────┐
+│   User Action   │ ────> │   AppContext    │ ────> │  Dexie IndexedDB │
+│ (Form/Button)   │       │  Action Methods │       │  Atomic Mutation │
+└─────────────────┘       └─────────────────┘       └──────────────────┘
+                                                              │
+                                                              ▼
+┌─────────────────┐       ┌─────────────────┐       ┌──────────────────┐
+│ UI Components   │ <──── │  React State    │ <──── │   useLiveQuery   │
+│ Re-render Inst. │       │   (useMemo)     │       │  Reactive Feed   │
+└─────────────────┘       └─────────────────┘       └──────────────────┘
+```
+
+### Where Invariants are Enforced
+- **Integer Paise Only**: Enforced across [`src/types/index.ts`](file:///home/jovyxmc/Projects/expense%20tracker/src/types/index.ts) and [`src/utils/formatters.ts`](file:///home/jovyxmc/Projects/expense%20tracker/src/utils/formatters.ts) via `rupeesToPaise` and `paiseToRupees`. Never use floats for currency calculations.
+- **Account Transfer Conservation**: In [`src/utils/finance.ts`](file:///home/jovyxmc/Projects/expense%20tracker/src/utils/finance.ts) inside `calculateAccountBalances()`. Internal transfers increment one ledger and decrement another; combined balance sum remains strictly unchanged ($+0$).
+- **Spendable Cash & Goal Ring-fencing**: In [`src/utils/finance.ts`](file:///home/jovyxmc/Projects/expense%20tracker/src/utils/finance.ts) inside `calculateMonthlySummary()`. Goals and pending bills reserve money without artificially creating or deleting cash. If obligations exceed cash, `isOvercommitted: true` surfaces the deficit immediately.
+- **Zero-Loss Bill Splitting**: In [`src/utils/billSplitter.ts`](file:///home/jovyxmc/Projects/expense%20tracker/src/utils/billSplitter.ts) inside `calculateBillSplit()`. Remainder paise are systematically distributed down to the exact paisa with $0$ remainder. In exact custom mode, mismatched allocations are flagged with discrepancy banners and disabled submissions.
+- **Database Schema Upgrades**: In [`src/db/index.ts`](file:///home/jovyxmc/Projects/expense%20tracker/src/db/index.ts) via Dexie versioned `.upgrade()` handlers, tested via [`tests/migration.test.ts`](file:///home/jovyxmc/Projects/expense%20tracker/tests/migration.test.ts).
+- **Atomic Backup Validation**: In [`src/db/index.ts`](file:///home/jovyxmc/Projects/expense%20tracker/src/db/index.ts) inside `importDatabaseFromJson()`, validated with Zod schemas and executed in a single atomic transaction rollback.
+
+---
+
+## 💡 Design Decisions
+
+### 1. Why Integer Paise?
+JavaScript represents all numbers as IEEE 754 64-bit floating point numbers. Operations like `0.1 + 0.2 = 0.30000000000000004` or `19.99 * 100 = 1998.9999999999998` inevitably corrupt balances, ledgers, and budget totals over time. By storing every monetary figure as an exact integer quantity of **paise** (where ₹1 = 100 paise), all math is integer-pure, fast, and 100% loss-free.
+
+### 2. Why Local-First with No Backend?
+- **Privacy for Students**: College students should never have to upload bank SMS messages, PG rents, canteen bills, or personal loans to a third-party cloud database.
+- **Instant 0ms Latency**: Queries run directly against in-memory IndexedDB with zero network round trips.
+- **True Offline PWA**: Works continuously during spotty campus Wi-Fi, basement classrooms, metro commutes, and airplane mode.
+- **Zero Operational Costs**: No server hosting bills, no cloud database maintenance, and zero subscription costs for students.
+
+### 3. Why Rule-Based Insights Instead of AI?
+- **Deterministic & Verifiable**: Financial rules (e.g. detecting if snack spending exceeds 25% of food expenses, or warning when discretionary purchases exceed 45%) give students clear, actionable, mathematical advice.
+- **Zero Hallucinations**: Rule engines cannot hallucinate non-existent debts or phantom expenses.
+- **Privacy-Preserving**: No private bank statements or spending habits are transmitted to external LLM APIs (OpenAI, Anthropic, or Google Cloud).
+- **Offline Reliability**: Insights generate instantly offline without an internet connection.
+
+---
+
+## 📸 Screenshots & Live Demo
+
+- **Live Demo URL**: [https://pennywise.pages.dev](https://pennywise.pages.dev) *(or your deployed custom domain)*
+
+### 📱 iPhone Screenshot Capture Checklist
+When capturing marketing or App Store / PWA showcase screenshots on an iPhone (Safari or Home Screen standalone mode), capture these 6 key views:
+
+1. **Dashboard Overview**:
+   - Available to spend headline figure (`₹X,XXX`).
+   - Tracked Vault Ledgers (`Primary Bank`, `UPI Wallet`, `Cash in Pocket`).
+   - Daily Spending Assistant card with cushion selector (`Safe`, `Bal`, `Flex`).
+2. **Fast Expense Logger with SMS Auto-Fill**:
+   - Tap `+` button in navigation.
+   - Expand `PARSE SMS` drawer with a pasted bank/UPI debit message auto-filled into amount and merchant.
+3. **Roommate & Canteen Bill Splitter**:
+   - `Split with Friends` modal with participants (`You`, `Aman`, `Rohan`).
+   - Split breakdown with WhatsApp-ready settlement preview.
+4. **Bank Statement Importer**:
+   - Bank Statement Import modal showing parsed transactions from an SBI or HDFC statement with classification badges.
+5. **Passcode & Privacy Screen**:
+   - Lock screen showing PIN verification dots, numeric keypad, and Touch ID / Face ID icon.
+6. **Settings & Data Safety**:
+   - Settings tab showing iOS Storage Persistence status (`PERSISTENT`), backup age (`Last Backup: Today`), and JSON backup export options.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE) — see the [LICENSE](LICENSE) file for details.
