@@ -8,6 +8,7 @@ import { BackupWarningBanner } from '../src/components/dashboard/BackupWarningBa
 import { AppProvider } from '../src/context/AppContext';
 import { resetAllData, db } from '../src/db';
 import { OnboardingModal } from '../src/components/onboarding/OnboardingModal';
+import { AppSettings } from '../src/types';
 
 describe('Phase 2 — iOS Data Safety & Persistence', () => {
   beforeEach(async () => {
@@ -170,7 +171,7 @@ describe('Phase 2 — iOS Data Safety & Persistence', () => {
 
     it('does not render when backup is recent (< 7 days ago)', async () => {
       // Put recent backup date in settings
-      const settings = (await db.settings.get('app_settings'))?.value;
+      const settings = (await db.settings.get('app_settings'))?.value as AppSettings | undefined;
       if (settings) {
         settings.lastBackupDate = new Date().toISOString();
         await db.settings.put({ key: 'app_settings', value: settings });

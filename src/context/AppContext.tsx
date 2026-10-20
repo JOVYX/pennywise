@@ -116,7 +116,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const settingsRecord = useLiveQuery(() => db.settings.get('app_settings'));
 
   const settings: AppSettings = useMemo(() => {
-    return settingsRecord?.value || DEFAULT_SETTINGS;
+    return (settingsRecord?.value as AppSettings) || DEFAULT_SETTINGS;
   }, [settingsRecord]);
 
   // Apply theme class to document

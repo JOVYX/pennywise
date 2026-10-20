@@ -10,7 +10,7 @@ import {
 } from '../../utils/security';
 
 export const LockScreen: React.FC = () => {
-  const { settings, isAppLocked, setIsAppLocked } = useApp();
+  const { settings, updateSettings, isAppLocked, setIsAppLocked } = useApp();
   const [pin, setPin] = useState<string>('');
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [isShaking, setIsShaking] = useState<boolean>(false);
@@ -60,7 +60,14 @@ export const LockScreen: React.FC = () => {
     setErrorMsg('');
 
     if (newPin.length === 4) {
-      const valid = await verifyPin(newPin, security.pinHash!);
+      const valid = await verifyPin(newPin, security.pinHash!, async (migratedHash) => {
+        await updateSettings({
+          security: {
+            ...security,
+            pinHash: migratedHash
+          }
+        });
+      });
       if (valid) {
         setPin('');
         setIsAppLocked(false);

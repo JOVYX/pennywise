@@ -1,19 +1,23 @@
 /**
- * Security and Passcode management for Pennywise PWA.
- * Provides SHA-256 PIN hashing, rate limiting, and WebAuthn / Face ID support.
+ * Security and Passcode Management for Pennywise PWA.
+ *
+ * PRIVACY SCREEN NOTICE:
+ * App Lock functions as a client-side UI privacy screen to deter casual shoulder-surfing.
+ * It does NOT cryptographically encrypt the underlying IndexedDB database on device storage.
  */
 
-const SALT = 'pennywise-secure-v1';
+export const PBKDF2_ITERATIONS = 100000;
+const LEGACY_SALT = 'pennywise-secure-v1';
 
-// In-memory security state for active session
+// In-memory security state for rate limiting
 let failedAttempts = 0;
 let lockoutUntil = 0;
 let lastActiveTimestamp = Date.now();
 
 /**
- * Computes SHA-256 hash of a 4-digit PIN.
+ * Computes legacy SHA-256 hash for backwards compatibility with pre-Phase 3 PINs.
  */
-export async function hashPin(pin: string, salt: string = SALT): Promise<string> {
+export async function hashLegacyPin(pin: string, salt: string = LEGACY_SALT): Promise<string> {
   const data = new TextEncoder().encode(`${salt}:${pin}`);
   if (typeof crypto !== 'undefined' && crypto.subtle && crypto.subtle.digest) {
     try {
@@ -25,7 +29,6 @@ export async function hashPin(pin: string, salt: string = SALT): Promise<string>
     }
   }
 
-  // Fallback hash implementation for environments without WebCrypto
   let hash = 0x811c9dc5;
   for (let i = 0; i < data.length; i++) {
     hash ^= data[i];
@@ -35,22 +38,136 @@ export async function hashPin(pin: string, salt: string = SALT): Promise<string>
 }
 
 /**
- * Verifies entered PIN against stored hash.
+ * Derives a PBKDF2 key hex string using WebCrypto with SHA-256 and high iteration count.
  */
-export async function verifyPin(pin: string, storedHash: string): Promise<boolean> {
-  if (isRateLimited()) {
-    return false;
+async function derivePbkdf2Hex(pin: string, saltBytes: Uint8Array<ArrayBuffer>, iterations: number): Promise<string> {
+  if (typeof crypto !== 'undefined' && crypto.subtle && crypto.subtle.importKey && crypto.subtle.deriveBits) {
+    const enc = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+      'raw',
+      enc.encode(pin),
+      { name: 'PBKDF2' },
+      false,
+      ['deriveBits']
+    );
+
+    const derivedBits = await crypto.subtle.deriveBits(
+      {
+        name: 'PBKDF2',
+        salt: saltBytes.buffer,
+        iterations,
+        hash: 'SHA-256'
+      },
+      keyMaterial,
+      256
+    );
+
+    return Array.from(new Uint8Array(derivedBits))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
   }
 
-  const computed = await hashPin(pin);
-  if (computed === storedHash) {
-    resetFailedAttempts();
-    updateLastActive();
-    return true;
+  // Fallback if WebCrypto is unavailable
+  return hashLegacyPin(pin, Array.from(saltBytes).map((b) => b.toString(16)).join(''));
+}
+
+/**
+ * Hashes a 4-digit PIN using PBKDF2 with WebCrypto, 100,000 iterations, and a cryptographically random 16-byte salt.
+ * Output format: `pbkdf2:<iterations>:<saltHex>:<hashHex>`
+ */
+export async function hashPin(pin: string, customSaltHex?: string): Promise<string> {
+  let saltBytes: Uint8Array<ArrayBuffer>;
+  if (customSaltHex) {
+    const matches = customSaltHex.match(/.{1,2}/g) || [];
+    const buf = new ArrayBuffer(matches.length);
+    saltBytes = new Uint8Array(buf);
+    matches.forEach((byte, idx) => {
+      saltBytes[idx] = parseInt(byte, 16);
+    });
   } else {
-    recordFailedAttempt();
-    return false;
+    const buf = new ArrayBuffer(16);
+    saltBytes = new Uint8Array(buf);
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      crypto.getRandomValues(saltBytes);
+    } else {
+      for (let i = 0; i < 16; i++) saltBytes[i] = Math.floor(Math.random() * 256);
+    }
   }
+
+  const saltHex = Array.from(saltBytes)
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+
+  const derivedHashHex = await derivePbkdf2Hex(pin, saltBytes, PBKDF2_ITERATIONS);
+  return `pbkdf2:${PBKDF2_ITERATIONS}:${saltHex}:${derivedHashHex}`;
+}
+
+export interface VerifyResult {
+  valid: boolean;
+  migratedHash?: string;
+}
+
+/**
+ * Verifies entered PIN against stored hash.
+ * If the stored hash is a legacy SHA-256 hash, it verifies and returns a migrated PBKDF2 hash.
+ */
+export async function verifyAndMigratePin(pin: string, storedHash: string): Promise<VerifyResult> {
+  if (isRateLimited()) {
+    return { valid: false };
+  }
+
+  if (storedHash.startsWith('pbkdf2:')) {
+    const parts = storedHash.split(':');
+    if (parts.length === 4) {
+      const iterations = parseInt(parts[1], 10);
+      const saltHex = parts[2];
+      const expectedHashHex = parts[3];
+
+      const matches = saltHex.match(/.{1,2}/g) || [];
+      const saltBytes = new Uint8Array(matches.map((b) => parseInt(b, 16)));
+      const candidateHashHex = await derivePbkdf2Hex(pin, saltBytes, iterations);
+
+      if (candidateHashHex === expectedHashHex) {
+        resetFailedAttempts();
+        updateLastActive();
+        return { valid: true };
+      }
+    }
+  } else {
+    // Legacy SHA-256 verification with automatic migration to PBKDF2
+    const legacyComputed = await hashLegacyPin(pin);
+    if (legacyComputed === storedHash) {
+      resetFailedAttempts();
+      updateLastActive();
+      const newPbkdf2Hash = await hashPin(pin);
+      return { valid: true, migratedHash: newPbkdf2Hash };
+    }
+  }
+
+  recordFailedAttempt();
+  return { valid: false };
+}
+
+/**
+ * Standard verifyPin with optional migration callback for transparent upgrade.
+ */
+export async function verifyPin(
+  pin: string,
+  storedHash: string,
+  onMigrate?: (newHash: string) => Promise<void> | void
+): Promise<boolean> {
+  const result = await verifyAndMigratePin(pin, storedHash);
+  if (result.valid) {
+    if (result.migratedHash && onMigrate) {
+      try {
+        await onMigrate(result.migratedHash);
+      } catch {
+        // Migration save failed non-fatally
+      }
+    }
+    return true;
+  }
+  return false;
 }
 
 export function isRateLimited(): boolean {
@@ -58,14 +175,13 @@ export function isRateLimited(): boolean {
 }
 
 export function getRemainingLockoutSeconds(): number {
-  const remaining = Math.max(0, Math.ceil((lockoutUntil - Date.now()) / 1000));
-  return remaining;
+  return Math.max(0, Math.ceil((lockoutUntil - Date.now()) / 1000));
 }
 
 export function recordFailedAttempt(): number {
   failedAttempts += 1;
   if (failedAttempts >= 5) {
-    lockoutUntil = Date.now() + 30 * 1000; // 30 second cooldown
+    lockoutUntil = Date.now() + 30 * 1000; // 30-second cooldown
     failedAttempts = 0;
   }
   return failedAttempts;
@@ -85,7 +201,6 @@ export function updateLastActive(): void {
  */
 export function shouldAutoLock(autoLockMinutes: number = 0): boolean {
   if (autoLockMinutes === 0) {
-    // Immediate lock on background switch
     return true;
   }
   const elapsedMs = Date.now() - lastActiveTimestamp;
@@ -95,24 +210,42 @@ export function shouldAutoLock(autoLockMinutes: number = 0): boolean {
 
 /**
  * Checks if Biometric / Face ID authentication is available on device.
+ * Gracefully returns false in non-secure contexts (e.g. http://192.168.x.x) or when unsupported.
  */
 export async function isBiometricsAvailable(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
+
+  // WebAuthn strictly requires a secure context (HTTPS or localhost)
+  if (window.isSecureContext === false) {
+    return false;
+  }
+
   try {
-    if (window.PublicKeyCredential && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
-      return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+    if (
+      typeof window.PublicKeyCredential !== 'undefined' &&
+      typeof window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function'
+    ) {
+      return await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
     }
   } catch {
     return false;
   }
+
   return false;
 }
 
 /**
  * Prompts user for Face ID / Touch ID authentication via WebAuthn.
+ * Gracefully returns false without throwing in non-secure contexts or when dismissed.
  */
 export async function authenticateWithBiometrics(): Promise<boolean> {
-  if (typeof window === 'undefined' || !window.PublicKeyCredential) {
+  if (
+    typeof window === 'undefined' ||
+    window.isSecureContext === false ||
+    typeof window.PublicKeyCredential === 'undefined' ||
+    typeof navigator === 'undefined' ||
+    !navigator.credentials
+  ) {
     return false;
   }
 

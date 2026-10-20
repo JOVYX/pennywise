@@ -1,4 +1,5 @@
 import Dexie, { type Table } from 'dexie';
+import { z } from 'zod';
 import {
   Account,
   Category,
@@ -13,7 +14,7 @@ import { DEFAULT_CATEGORIES } from '../data/defaultCategories';
 
 export interface SettingItem {
   key: string;
-  value: any;
+  value: unknown;
 }
 
 export class PennywiseDB extends Dexie {
@@ -152,32 +153,220 @@ export async function exportDatabaseToJson(): Promise<string> {
   return JSON.stringify(backupData, null, 2);
 }
 
+export const MAX_BACKUP_SIZE_BYTES = 20 * 1024 * 1024; // 20 MB
+
+const BackupAccountSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  type: z.enum(['bank', 'cash', 'wallet', 'other']),
+  openingBalancePaise: z.number().int(),
+  color: z.string(),
+  icon: z.string(),
+  isDefault: z.boolean().optional(),
+  isArchived: z.boolean().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string()
+});
+
+const BackupCategorySchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  type: z.enum(['expense', 'income']),
+  classification: z.enum(['essential', 'discretionary']),
+  icon: z.string(),
+  color: z.string(),
+  monthlyLimitPaise: z.number().int().optional(),
+  subcategories: z.array(z.string()).optional(),
+  isDefault: z.boolean().optional(),
+  order: z.number().optional()
+});
+
+const BackupTransactionSchema = z.object({
+  id: z.string().min(1),
+  type: z.enum(['expense', 'income', 'transfer']),
+  amountPaise: z.number().int(),
+  accountId: z.string().min(1),
+  toAccountId: z.string().optional(),
+  categoryId: z.string().min(1),
+  subCategory: z.string().optional(),
+  date: z.string(),
+  merchant: z.string(),
+  notes: z.string().optional(),
+  paymentMethod: z.enum(['upi', 'cash', 'card', 'netbanking', 'other']),
+  tags: z.array(z.string()).optional(),
+  recurringRuleId: z.string().optional(),
+  isRefund: z.boolean().optional(),
+  linkedExpenseId: z.string().optional(),
+  isDemo: z.boolean().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string()
+});
+
+const BackupSavingsGoalSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  targetAmountPaise: z.number().int(),
+  currentAmountPaise: z.number().int(),
+  targetDate: z.string().optional(),
+  priority: z.enum(['high', 'medium', 'low']),
+  icon: z.string(),
+  color: z.string(),
+  notes: z.string().optional(),
+  history: z.array(z.object({
+    id: z.string(),
+    date: z.string(),
+    amountPaise: z.number().int(),
+    type: z.enum(['deposit', 'withdrawal']),
+    note: z.string().optional()
+  })).default([]),
+  isDemo: z.boolean().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string()
+});
+
+const BackupDebtSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  lender: z.string().min(1),
+  type: z.enum(['personal_debt', 'credit_card', 'bnpl', 'loan', 'lent_to_friend']),
+  originalAmountPaise: z.number().int(),
+  currentBalancePaise: z.number().int(),
+  interestRatePercent: z.number().optional(),
+  minimumPaymentPaise: z.number().int().optional(),
+  emiAmountPaise: z.number().int().optional(),
+  dueDate: z.string().optional(),
+  payments: z.array(z.object({
+    id: z.string(),
+    date: z.string(),
+    amountPaise: z.number().int(),
+    principalPaise: z.number().int(),
+    interestPaise: z.number().int(),
+    transactionId: z.string().optional(),
+    note: z.string().optional()
+  })).default([]),
+  isPaidOff: z.boolean(),
+  notes: z.string().optional(),
+  isDemo: z.boolean().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string()
+});
+
+const BackupRecurringRuleSchema = z.object({
+  id: z.string().min(1),
+  type: z.enum(['expense', 'income']),
+  name: z.string().min(1),
+  amountPaise: z.number().int(),
+  accountId: z.string().min(1),
+  categoryId: z.string().min(1),
+  frequency: z.enum(['daily', 'weekly', 'monthly', 'custom']),
+  intervalDays: z.number().optional(),
+  nextDueDate: z.string(),
+  isActive: z.boolean(),
+  paymentMethod: z.enum(['upi', 'cash', 'card', 'netbanking', 'other']),
+  merchant: z.string(),
+  notes: z.string().optional(),
+  isDemo: z.boolean().optional(),
+  createdAt: z.string(),
+  updatedAt: z.string()
+});
+
+const BackupBudgetSchema = z.object({
+  month: z.string(),
+  overallLimitPaise: z.number().int().optional(),
+  categoryLimits: z.record(z.string(), z.number().int()).default({}),
+  weeklyDiscretionaryLimitPaise: z.number().int().optional(),
+  enableRollover: z.boolean().optional(),
+  warningThresholds: z.tuple([z.number(), z.number(), z.number()]).optional()
+});
+
+const BackupSettingSchema = z.object({
+  key: z.string(),
+  value: z.unknown()
+});
+
+export const BackupSchema = z.object({
+  app: z.literal('Pennywise', {
+    message: 'Invalid backup file: Missing Pennywise signature.'
+  }),
+  version: z.number().int(),
+  exportedAt: z.string().optional(),
+  data: z.object({
+    accounts: z.array(BackupAccountSchema),
+    categories: z.array(BackupCategorySchema).default([]),
+    transactions: z.array(BackupTransactionSchema),
+    savingsGoals: z.array(BackupSavingsGoalSchema).optional().default([]),
+    debts: z.array(BackupDebtSchema).optional().default([]),
+    recurringRules: z.array(BackupRecurringRuleSchema).optional().default([]),
+    budgets: z.array(BackupBudgetSchema).optional().default([]),
+    settings: z.array(BackupSettingSchema).optional().default([])
+  })
+});
+
 /**
- * Restores all user data from a JSON backup with schema verification
+ * Restores all user data from a JSON backup with strict schema verification and size capping.
+ * Kept atomic: runs in a single Dexie transaction.
  */
 export async function importDatabaseFromJson(jsonContent: string): Promise<{ success: boolean; message: string }> {
+  // 1. Cap file size at 20 MB
+  if (jsonContent.length > MAX_BACKUP_SIZE_BYTES) {
+    return {
+      success: false,
+      message: 'Backup file exceeds maximum allowed size of 20 MB.'
+    };
+  }
+
+  // 2. Validate JSON syntax
+  let rawJson: unknown;
   try {
-    const parsed = JSON.parse(jsonContent);
-    if (!parsed || parsed.app !== 'Pennywise' || !parsed.data) {
-      return { success: false, message: 'Invalid backup file: Missing Pennywise signature.' };
-    }
+    rawJson = JSON.parse(jsonContent);
+  } catch {
+    return {
+      success: false,
+      message: 'Malformed JSON: Unable to parse backup file.'
+    };
+  }
 
-    const {
-      accounts,
-      categories,
-      transactions,
-      savingsGoals,
-      debts,
-      recurringRules,
-      budgets,
-      settings
-    } = parsed.data;
+  // 3. Verify Pennywise application signature
+  if (!rawJson || typeof rawJson !== 'object' || (rawJson as Record<string, unknown>).app !== 'Pennywise') {
+    return {
+      success: false,
+      message: 'Invalid backup file: Missing Pennywise signature.'
+    };
+  }
 
-    if (!Array.isArray(accounts) || !Array.isArray(transactions)) {
-      return { success: false, message: 'Invalid backup structure: accounts or transactions missing.' };
-    }
+  // 4. Validate with strict Zod schema
+  const validation = BackupSchema.safeParse(rawJson);
+  if (!validation.success) {
+    const firstIssue = validation.error.issues[0]?.message || 'Schema validation failed.';
+    return {
+      success: false,
+      message: `Invalid backup schema: ${firstIssue}`
+    };
+  }
 
-    // Atomic wipe and restore
+  const parsed = validation.data;
+
+  // 4. Validate schema version
+  if (parsed.version !== 1) {
+    return {
+      success: false,
+      message: `Unsupported backup version: ${parsed.version}. Only schema version 1 is supported.`
+    };
+  }
+
+  const {
+    accounts,
+    categories,
+    transactions,
+    savingsGoals,
+    debts,
+    recurringRules,
+    budgets,
+    settings
+  } = parsed.data;
+
+  try {
+    // 5. Atomic wipe and restore within a single Dexie transaction
     await db.transaction(
       'rw',
       [
@@ -202,30 +391,44 @@ export async function importDatabaseFromJson(jsonContent: string): Promise<{ suc
           db.settings.clear()
         ]);
 
-        if (accounts.length) await db.accounts.bulkAdd(accounts);
-        if (categories && categories.length) await db.categories.bulkAdd(categories);
-        if (transactions.length) await db.transactions.bulkAdd(transactions);
-        if (savingsGoals && savingsGoals.length) await db.savingsGoals.bulkAdd(savingsGoals);
-        if (debts && debts.length) await db.debts.bulkAdd(debts);
-        if (recurringRules && recurringRules.length) await db.recurringRules.bulkAdd(recurringRules);
-        if (budgets && budgets.length) await db.budgets.bulkAdd(budgets);
-        if (settings && settings.length) await db.settings.bulkAdd(settings);
+        if (accounts.length) await db.accounts.bulkAdd(accounts as Account[]);
+        if (categories && categories.length) await db.categories.bulkAdd(categories as Category[]);
+        if (transactions.length) await db.transactions.bulkAdd(transactions as Transaction[]);
+        if (savingsGoals && savingsGoals.length) await db.savingsGoals.bulkAdd(savingsGoals as SavingsGoal[]);
+        if (debts && debts.length) await db.debts.bulkAdd(debts as Debt[]);
+        if (recurringRules && recurringRules.length) await db.recurringRules.bulkAdd(recurringRules as RecurringRule[]);
+        if (budgets && budgets.length) await db.budgets.bulkAdd(budgets as BudgetConfig[]);
+        if (settings && settings.length) await db.settings.bulkAdd(settings as SettingItem[]);
 
         // Update last backup date in settings
-        const currentSettings = (await db.settings.get('app_settings'))?.value || DEFAULT_SETTINGS;
+        const currentSettings = ((await db.settings.get('app_settings'))?.value as AppSettings) || DEFAULT_SETTINGS;
         currentSettings.lastBackupDate = new Date().toISOString();
         await db.settings.put({ key: 'app_settings', value: currentSettings });
       }
     );
 
     return { success: true, message: 'Data restored successfully.' };
-  } catch (err: any) {
-    return { success: false, message: `Failed to import data: ${err?.message || 'Unknown error'}` };
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Unknown database transaction error';
+    return { success: false, message: `Failed to import data: ${errorMsg}` };
   }
 }
 
 /**
- * Exports transactions to CSV for Excel / Google Sheets
+ * Sanitizes a single cell value for CSV export to prevent formula injection attacks.
+ * Any cell starting with =, +, -, @, tab, or carriage return is prefixed with a single quote '.
+ */
+export function sanitizeCsvCell(val: string | number | undefined | null): string {
+  if (val === undefined || val === null) return '""';
+  let str = String(val);
+  if (/^[=+\-@\t\r]/.test(str)) {
+    str = "'" + str;
+  }
+  return `"${str.replace(/"/g, '""')}"`;
+}
+
+/**
+ * Exports transactions to CSV for Excel / Google Sheets with formula injection sanitization
  */
 export async function exportTransactionsToCsv(): Promise<string> {
   const [transactions, accounts, categories] = await Promise.all([
@@ -255,18 +458,18 @@ export async function exportTransactionsToCsv(): Promise<string> {
   const rows = transactions
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .map((t) => [
-      t.id,
-      t.date,
-      t.type,
-      (t.amountPaise / 100).toFixed(2),
-      t.amountPaise.toString(),
-      `"${accountMap.get(t.accountId) || t.accountId}"`,
-      t.toAccountId ? `"${accountMap.get(t.toAccountId) || t.toAccountId}"` : '',
-      `"${categoryMap.get(t.categoryId) || t.categoryId}"`,
-      t.subCategory ? `"${t.subCategory}"` : '',
-      `"${(t.merchant || '').replace(/"/g, '""')}"`,
-      t.paymentMethod,
-      `"${(t.notes || '').replace(/"/g, '""')}"`
+      sanitizeCsvCell(t.id),
+      sanitizeCsvCell(t.date),
+      sanitizeCsvCell(t.type),
+      sanitizeCsvCell((t.amountPaise / 100).toFixed(2)),
+      sanitizeCsvCell(t.amountPaise),
+      sanitizeCsvCell(accountMap.get(t.accountId) || t.accountId),
+      sanitizeCsvCell(t.toAccountId ? (accountMap.get(t.toAccountId) || t.toAccountId) : ''),
+      sanitizeCsvCell(categoryMap.get(t.categoryId) || t.categoryId),
+      sanitizeCsvCell(t.subCategory || ''),
+      sanitizeCsvCell(t.merchant || ''),
+      sanitizeCsvCell(t.paymentMethod),
+      sanitizeCsvCell(t.notes || '')
     ]);
 
   return [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
@@ -689,7 +892,7 @@ export async function seedSampleData(): Promise<void> {
   await db.budgets.put(demoBudget);
 
   // Mark app settings
-  const settings = (await db.settings.get('app_settings'))?.value || DEFAULT_SETTINGS;
+  const settings = ((await db.settings.get('app_settings'))?.value as AppSettings) || DEFAULT_SETTINGS;
   settings.onboardingCompleted = true;
   settings.hasSampleData = true;
   await db.settings.put({ key: 'app_settings', value: settings });
@@ -780,7 +983,7 @@ export async function clearSampleData(): Promise<void> {
         ]);
       }
 
-      const settings = (await db.settings.get('app_settings'))?.value || DEFAULT_SETTINGS;
+      const settings = ((await db.settings.get('app_settings'))?.value as AppSettings) || DEFAULT_SETTINGS;
       settings.hasSampleData = false;
       await db.settings.put({ key: 'app_settings', value: settings });
     }

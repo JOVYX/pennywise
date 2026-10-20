@@ -13,10 +13,11 @@ describe('App Security & PIN Lock', () => {
     resetFailedAttempts();
   });
 
-  it('generates consistent SHA-256 hash for identical PINs', async () => {
-    const hash1 = await hashPin('1234');
-    const hash2 = await hashPin('1234');
-    const hashOther = await hashPin('4321');
+  it('generates consistent PBKDF2 hash for identical PINs with identical salt', async () => {
+    const fixedSalt = '11223344556677889900aabbccddeeff';
+    const hash1 = await hashPin('1234', fixedSalt);
+    const hash2 = await hashPin('1234', fixedSalt);
+    const hashOther = await hashPin('4321', fixedSalt);
 
     expect(hash1).toBe(hash2);
     expect(hash1).not.toBe(hashOther);
