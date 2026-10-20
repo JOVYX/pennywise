@@ -27,8 +27,8 @@ export class PennywiseDB extends Dexie {
   budgets!: Table<BudgetConfig, string>;
   settings!: Table<SettingItem, string>;
 
-  constructor() {
-    super('PennywiseDB');
+  constructor(databaseName = 'PennywiseDB') {
+    super(databaseName);
     this.version(1).stores({
       accounts: 'id, name, type, isArchived, createdAt',
       categories: 'id, name, type, classification, order',
@@ -39,6 +39,38 @@ export class PennywiseDB extends Dexie {
       budgets: 'month',
       settings: 'key'
     });
+
+    this.version(2)
+      .stores({
+        accounts: 'id, name, type, isArchived, isDefault, createdAt',
+        categories: 'id, name, type, classification, order',
+        transactions: 'id, type, accountId, categoryId, date, [date+type], isDemo, createdAt',
+        savingsGoals: 'id, priority, targetDate, isDemo, createdAt',
+        debts: 'id, isPaidOff, dueDate, isDemo, createdAt',
+        recurringRules: 'id, type, isActive, nextDueDate, isDemo, createdAt',
+        budgets: 'month',
+        settings: 'key'
+      })
+      .upgrade(async (tx) => {
+        await tx.table('accounts').toCollection().modify((account: Record<string, unknown>) => {
+          if (account.isArchived === undefined) account.isArchived = false;
+          if (account.isDefault === undefined) account.isDefault = account.id === 'acc-primary-bank';
+        });
+
+        await tx.table('transactions').toCollection().modify((txItem: Record<string, unknown>) => {
+          if (!txItem.paymentMethod) txItem.paymentMethod = 'upi';
+        });
+
+        const settingsTable = tx.table('settings');
+        const settingsRecord = (await settingsTable.get('app_settings')) as SettingItem | undefined;
+        if (settingsRecord && settingsRecord.value) {
+          settingsRecord.value = {
+            ...DEFAULT_SETTINGS,
+            ...(settingsRecord.value as Record<string, unknown>)
+          };
+          await settingsTable.put(settingsRecord);
+        }
+      });
   }
 }
 

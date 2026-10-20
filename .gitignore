@@ -6,3 +6,6 @@ dist-ssr
 .env.*
 .DS_Store
 Thumbs.db
+test-results/
+playwright-report/
+blob-report/

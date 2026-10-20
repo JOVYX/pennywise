@@ -30,7 +30,7 @@ import { downloadOrShareFile } from '../utils/fileExport';
 import { checkStoragePersistence, requestStoragePersistence } from '../utils/storage';
 
 export const SettingsView: React.FC = () => {
-  const { settings, updateSettings, accounts, setIsImportStatementOpen } = useApp();
+  const { settings, updateSettings, accounts, setIsImportStatementOpen, setIsAppLocked } = useApp();
 
   const [feedbackMsg, setFeedbackMsg] = useState<{ text: string; error?: boolean } | null>(null);
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
@@ -411,6 +411,15 @@ export const SettingsView: React.FC = () => {
                 <option value={15} className="bg-[#111827] text-white">After 15 minutes</option>
               </select>
             </div>
+
+            <button
+              type="button"
+              onClick={() => setIsAppLocked(true)}
+              className="w-full py-2.5 px-3 rounded-lg bg-[#111827] hover:bg-[#161e2e] border border-[#28354b] text-slate-300 hover:text-white text-xs font-semibold flex items-center justify-center gap-2 transition-colors active:scale-[0.98]"
+            >
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+              <span>Lock Vault Now</span>
+            </button>
           </div>
         )}
       </div>
@@ -481,6 +490,8 @@ export const SettingsView: React.FC = () => {
           {/* Export JSON */}
           <button
             type="button"
+            id="btn-export-json"
+            aria-label="Export JSON Backup"
             onClick={handleExportJson}
             className="p-3.5 rounded-lg bg-[#161e2e] border border-[#28354b] text-left hover:border-slate-500 transition-all flex flex-col justify-between"
           >

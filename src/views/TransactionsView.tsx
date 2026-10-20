@@ -165,6 +165,8 @@ export const TransactionsView: React.FC = () => {
           </button>
           <button
             type="button"
+            id="btn-split-bill"
+            aria-label="Split a bill with friends"
             onClick={() => setIsSplitBillOpen(true)}
             title="Split Bill with Friends"
             className="p-2.5 rounded-lg bg-[#111827] border border-[#1f293d] text-slate-300 hover:text-white hover:bg-[#161e2e] active:scale-95 transition-all shrink-0 flex items-center justify-center"
