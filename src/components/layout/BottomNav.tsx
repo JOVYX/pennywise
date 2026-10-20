@@ -11,15 +11,15 @@ export const BottomNav: React.FC = () => {
   };
 
   const navItems = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'transactions', label: 'Transactions', icon: ReceiptText },
+    { id: 'home', label: 'Home', ariaLabel: 'Home', icon: Home },
+    { id: 'transactions', label: 'Transactions', ariaLabel: 'Transactions', icon: ReceiptText },
     { id: 'add', label: 'Add', isSpecial: true },
-    { id: 'budgets', label: 'Budgets', icon: PieChart },
-    { id: 'insights', label: 'Insights', icon: TrendingUp },
+    { id: 'budgets', label: 'Budgets', ariaLabel: 'Budgets', icon: PieChart },
+    { id: 'insights', label: 'Insights', ariaLabel: 'Insights', icon: TrendingUp },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-black/85 backdrop-blur-3xl border-t border-white/[0.08] px-3 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2 select-none">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#0b0f17]/95 backdrop-blur-md border-t border-[#1f293d] px-2 pb-[max(0.6rem,env(safe-area-inset-bottom))] pt-2 select-none">
       <div className="max-w-md mx-auto flex items-center justify-around relative">
         {navItems.map((item) => {
           if (item.isSpecial) {
@@ -29,12 +29,12 @@ export const BottomNav: React.FC = () => {
                   id="btn-add-transaction"
                   type="button"
                   onClick={handleOpenAdd}
-                  className="w-12 h-12 rounded-full bg-emerald-400 active:bg-emerald-300 text-black flex items-center justify-center shadow-lg shadow-emerald-500/25 active:scale-90 transition-all duration-120 focus:outline-none ring-4 ring-black"
+                  className="w-12 h-12 rounded-xl bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-black flex items-center justify-center shadow-lg shadow-amber-400/20 active:scale-90 transition-all duration-100 focus:outline-none ring-4 ring-[#0b0f17] border border-amber-300"
                   aria-label="Add transaction"
                 >
-                  <Plus className="w-6 h-6 stroke-[2.5]" />
+                  <Plus className="w-6 h-6 stroke-[2.8]" />
                 </button>
-                <span className="text-[10px] font-medium text-zinc-400 mt-0.5">Add</span>
+                <span className="mono text-[9px] font-bold text-amber-400 mt-0.5 tracking-wider">LOG</span>
               </div>
             );
           }
@@ -47,32 +47,34 @@ export const BottomNav: React.FC = () => {
               key={item.id}
               id={`nav-tab-${item.id}`}
               type="button"
+              aria-label={item.ariaLabel}
               onClick={() => setSelectedTab(item.id as any)}
-              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all duration-120 active:scale-95 ${
+              className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-100 active:scale-95 ${
                 isActive
                   ? 'text-white font-semibold'
-                  : 'text-zinc-500 hover:text-zinc-300'
+                  : 'text-slate-500 hover:text-slate-300'
               }`}
             >
-              <Icon className={`w-5 h-5 mb-0.5 transition-transform ${isActive ? 'text-emerald-400 stroke-[2.2]' : 'stroke-[1.6]'}`} />
-              <span className={`text-[10px] tracking-tight ${isActive ? 'text-white' : 'text-zinc-500'}`}>{item.label}</span>
+              <Icon className={`w-5 h-5 mb-0.5 transition-transform ${isActive ? 'text-amber-400 stroke-[2.3]' : 'stroke-[1.6]'}`} />
+              <span className={`text-[10px] tracking-tight ${isActive ? 'text-slate-100 font-semibold' : 'text-slate-400'}`}>{item.label}</span>
             </button>
           );
         })}
 
-        {/* Dedicated Settings Icon Button */}
+        {/* Dedicated Settings Button */}
         <button
           id="nav-tab-settings"
           type="button"
+          aria-label="Settings"
           onClick={() => setSelectedTab('settings')}
-          className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all duration-120 active:scale-95 ${
+          className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-all duration-100 active:scale-95 ${
             selectedTab === 'settings'
               ? 'text-white font-semibold'
-              : 'text-zinc-500 hover:text-zinc-300'
+              : 'text-slate-500 hover:text-slate-300'
           }`}
         >
-          <Settings2 className={`w-5 h-5 mb-0.5 ${selectedTab === 'settings' ? 'text-emerald-400 stroke-[2.2]' : 'stroke-[1.6]'}`} />
-          <span className={`text-[10px] tracking-tight ${selectedTab === 'settings' ? 'text-white' : 'text-zinc-500'}`}>Settings</span>
+          <Settings2 className={`w-5 h-5 mb-0.5 ${selectedTab === 'settings' ? 'text-amber-400 stroke-[2.3]' : 'stroke-[1.6]'}`} />
+          <span className={`text-[10px] tracking-tight ${selectedTab === 'settings' ? 'text-slate-100 font-semibold' : 'text-slate-400'}`}>Settings</span>
         </button>
       </div>
     </nav>

@@ -22,50 +22,60 @@ export const DailyAllowanceCard: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#121214] border border-white/[0.08] rounded-3xl p-5 shadow-sm relative overflow-hidden">
+    <div className="bg-[#111827] border border-[#1f293d] rounded-xl p-5 shadow-sm relative overflow-hidden">
+      {/* Top Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
-          <div className="w-6 h-6 rounded-lg bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-zinc-300">
+          <div className="w-6 h-6 rounded bg-[#161e2e] border border-[#28354b] flex items-center justify-center text-amber-400">
             <Target className="w-3.5 h-3.5" />
           </div>
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
-            Daily Spending Assistant
+          <span className="mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            DAILY SPENDING ASSISTANT
           </span>
         </div>
-        <div className="flex items-center space-x-1.5 text-[11px] font-medium text-zinc-400 bg-white/[0.04] px-2.5 py-0.8 rounded-full border border-white/[0.06]">
-          <Calendar className="w-3 h-3 text-zinc-400" />
-          <span>{allowance.daysRemaining} days remaining</span>
+        <div className="flex items-center space-x-1.5 mono text-[11px] font-semibold text-slate-300 bg-[#161e2e] px-2.5 py-1 rounded border border-[#28354b]">
+          <Calendar className="w-3 h-3 text-amber-400" />
+          <span>{allowance.daysRemaining}d to stipend</span>
         </div>
       </div>
 
-      <div className="flex items-baseline justify-between mb-2">
+      {/* Hero Allowance Gauge */}
+      <div className="bg-[#0b0f17] border border-[#1f293d] rounded-xl p-3.5 mb-3 flex items-center justify-between">
         <div>
-          <span className="text-3xl font-bold text-white tabular-nums tracking-tight">
-            {formatINR(allowance.dailyLimitPaise, { showPaise: false })}
-          </span>
-          <span className="text-xs font-normal text-zinc-400 ml-1.5">/ day</span>
+          <div className="mono text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">
+            ALLOWANCE TODAY
+          </div>
+          <div className="flex items-baseline space-x-1.5">
+            <span className="mono text-3xl font-extrabold text-amber-400 tabular-nums tracking-tight">
+              {formatINR(allowance.dailyLimitPaise, { showPaise: false })}
+            </span>
+            <span className="mono text-xs font-semibold text-slate-400">/ day</span>
+          </div>
         </div>
 
-        {/* Strategy Selector Pills */}
-        <div className="flex items-center bg-black/60 p-0.5 rounded-xl border border-white/[0.07] text-[10px] font-medium">
-          {(['conservative', 'balanced', 'flexible'] as BudgetAllowanceStrategy[]).map((strat) => (
-            <button
-              key={strat}
-              type="button"
-              onClick={() => handleStrategyChange(strat)}
-              className={`px-2 py-0.8 rounded-lg capitalize transition-all ${
-                settings.dailyAllowanceStrategy === strat
-                  ? 'bg-white/[0.12] text-white font-semibold shadow-sm'
-                  : 'text-zinc-500 hover:text-zinc-300'
-              }`}
-            >
-              {strat === 'conservative' ? 'Safe' : strat === 'balanced' ? 'Balanced' : 'Flex'}
-            </button>
-          ))}
+        {/* Strategy Selector Segmented Control */}
+        <div className="flex flex-col items-end">
+          <span className="mono text-[9px] uppercase font-bold text-slate-500 mb-1">CUSHION</span>
+          <div className="flex items-center bg-[#0b0f17] p-0.5 rounded border border-[#1f293d] text-[10px] mono font-semibold">
+            {(['conservative', 'balanced', 'flexible'] as BudgetAllowanceStrategy[]).map((strat) => (
+              <button
+                key={strat}
+                type="button"
+                onClick={() => handleStrategyChange(strat)}
+                className={`px-2 py-1 rounded capitalize transition-all ${
+                  settings.dailyAllowanceStrategy === strat
+                    ? 'bg-amber-500 text-slate-950 font-bold shadow-sm'
+                    : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                {strat === 'conservative' ? 'Safe' : strat === 'balanced' ? 'Bal' : 'Flex'}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <p className="text-xs text-zinc-400 leading-relaxed mt-1">
+      <p className="text-xs text-slate-400 leading-relaxed">
         {allowance.explanation}
       </p>
     </div>

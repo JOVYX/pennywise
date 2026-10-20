@@ -10,6 +10,7 @@ import { SettingsView } from './views/SettingsView';
 import { TransactionModal } from './components/transactions/TransactionModal';
 import { OnboardingModal } from './components/onboarding/OnboardingModal';
 import { BillSplitterModal } from './components/splitter/BillSplitterModal';
+import { BankStatementModal } from './components/importer/BankStatementModal';
 import { LockScreen } from './components/security/LockScreen';
 
 const AppContent: React.FC = () => {
@@ -28,10 +29,10 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black text-zinc-100 flex flex-col selection:bg-emerald-500/20 selection:text-emerald-300">
-      {/* 390px iPhone Viewport Shell Container */}
-      <div className="w-full max-w-md mx-auto min-h-screen flex flex-col bg-black relative border-x border-white/[0.07] pb-[5.5rem]">
-        {/* Sticky iOS Header with month switcher */}
+    <div className="min-h-screen bg-[#080b11] text-slate-100 flex flex-col selection:bg-amber-500/20 selection:text-amber-300">
+      {/* 390px Viewport Shell Container */}
+      <div className="w-full max-w-md mx-auto min-h-screen flex flex-col bg-[#0b0f17] relative border-x border-[#1f293d] pb-[5.5rem]">
+        {/* Sticky Header with month switcher */}
         <Header />
 
         {/* Main Tab Screen */}
@@ -49,6 +50,7 @@ const AppContent: React.FC = () => {
         {/* Global Modals */}
         <TransactionModal />
         <BillSplitterModal />
+        <BankStatementModal />
         <OnboardingModal />
         <LockScreen />
       </div>

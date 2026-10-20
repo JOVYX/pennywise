@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, height=844, initial-scale=1.0">
+<title>Pennywise — Campus Passbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 390px; height: 844px; overflow: hidden;
+    background: #fbf9f4; color: #1e293b;
+    font-family: 'Work Sans', sans-serif;
+    padding: 48px 16px 20px 16px;
+    display: flex; flex-direction: column; gap: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 2px solid #4338ca; padding-bottom: 10px;
+  }
+  .book-title { font-size: 18px; font-weight: 700; color: #4338ca; letter-spacing: -0.02em; }
+  .stamp {
+    font-family: 'Courier Prime', monospace; font-size: 10px; font-weight: 700;
+    color: #dc2626; border: 1.5px solid #dc2626; padding: 2px 6px; border-radius: 3px;
+    transform: rotate(-2deg); display: inline-block;
+  }
+  .passbook-card {
+    background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+  }
+  .card-label { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+  .balance-num { font-size: 30px; font-weight: 700; color: #0f172a; margin: 4px 0 8px 0; }
+  .divider { height: 1px; background: repeating-linear-gradient(90deg, #cbd5e1 0 4px, transparent 4px 8px); margin: 8px 0; }
+  .stats-row { display: flex; justify-content: space-between; font-size: 12px; }
+
+  .allowance-coupon {
+    background: #f1f5f9; border: 1px dashed #6366f1; border-radius: 8px; padding: 12px 14px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .coupon-val { font-size: 24px; font-weight: 700; color: #4338ca; }
+
+  .presets-strip { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; }
+  .preset-tag {
+    background: #ffffff; border: 1px solid #cbd5e1; border-radius: 16px; padding: 5px 10px;
+    font-size: 11px; font-weight: 600; color: #334155; white-space: nowrap;
+  }
+
+  .ledger-head {
+    display: flex; justify-content: space-between; font-size: 11px; font-weight: 700;
+    color: #64748b; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; padding-bottom: 6px;
+  }
+  .ledger-feed { display: flex; flex-direction: column; }
+  .ledger-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid #f1f5f9;
+  }
+  .item-name { font-size: 13px; font-weight: 600; color: #1e293b; }
+  .item-meta { font-size: 11px; color: #64748b; }
+  .item-val { font-size: 14px; font-weight: 700; font-family: 'Courier Prime', monospace; }
+  .dr { color: #dc2626; }
+  .cr { color: #059669; }
+
+  .nav { margin-top: auto; border-top: 2px solid #4338ca; padding-top: 10px; display: flex; justify-content: space-around; font-size: 11px; font-weight: 600; color: #64748b; }
+  .nav-cur { color: #4338ca; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div style="font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 600;">Student Ledger</div>
+      <div class="book-title">Pennywise Register</div>
+    </div>
+    <div class="stamp">VERIFIED LOCAL</div>
+  </div>
+
+  <div class="passbook-card">
+    <div class="card-label">Net Confirmed Cash</div>
+    <div class="balance-num">₹12,450.00</div>
+    <div class="divider"></div>
+    <div class="stats-row">
+      <span style="color: #64748b">Savings Target: ₹5,000</span>
+      <span style="color: #059669; font-weight: 600;">In Safe Cushion</span>
+    </div>
+  </div>
+
+  <div class="allowance-coupon">
+    <div>
+      <div style="font-size: 11px; font-weight: 600; color: #64748b;">TODAY'S ALLOWANCE</div>
+      <div class="coupon-val">₹415.00</div>
+    </div>
+    <div style="text-align: right; font-size: 11px; color: #64748b;">
+      <div>30 Days to Income</div>
+      <div style="color: #4338ca; font-weight: 600;">Conservative (15%)</div>
+    </div>
+  </div>
+
+  <div class="presets-strip">
+    <span class="preset-tag">☕ Tapri Chai ₹20</span>
+    <span class="preset-tag">🍱 Campus Mess ₹70</span>
+    <span class="preset-tag">⚡ Blinkit ₹150</span>
+    <span class="preset-tag">🚇 Metro ₹40</span>
+  </div>
+
+  <div class="ledger-head">
+    <span>Transaction</span>
+    <span>Debit / Credit</span>
+  </div>
+  <div class="ledger-feed">
+    <div class="ledger-item">
+      <div>
+        <div class="item-name">Kadak Chai (Campus Tapri)</div>
+        <div class="item-meta">Paytm UPI • Today, 4:15 PM</div>
+      </div>
+      <div class="item-val dr">-₹20.00</div>
+    </div>
+    <div class="ledger-item">
+      <div>
+        <div class="item-name">Aniket (Room Rent Share)</div>
+        <div class="item-meta">Flat Split • Settled</div>
+      </div>
+      <div class="item-val cr">+₹3,500.00</div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <span class="nav-cur">Passbook</span>
+    <span>Splitter</span>
+    <span>Analytics</span>
+    <span>Settings</span>
+  </div>
+</body>
+</html>

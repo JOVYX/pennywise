@@ -5,7 +5,8 @@ import {
   Copy,
   Edit2,
   X,
-  Users
+  Users,
+  FileSpreadsheet
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { Transaction } from '../types';
@@ -22,7 +23,8 @@ export const TransactionsView: React.FC = () => {
     setEditingTx,
     saveTransaction,
     deleteTransaction,
-    setIsSplitBillOpen
+    setIsSplitBillOpen,
+    setIsImportStatementOpen
   } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -128,24 +130,24 @@ export const TransactionsView: React.FC = () => {
 
   return (
     <div className="space-y-3 px-4 py-3 max-w-md mx-auto">
-      {/* Top Search & Filter Bar */}
+      {/* Search & Tool Bar */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-neutral-400 absolute left-3.5 top-3" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
             <input
               id="input-search-transactions"
               type="text"
               placeholder="Search merchant, notes, category..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/[0.04] border border-white/[0.08] rounded-2xl pl-10 pr-4 py-2.5 text-xs text-white placeholder:text-neutral-500 focus:outline-none focus:border-white/30 transition-all"
+              className="w-full bg-[#111827] border border-[#1f293d] rounded-lg pl-10 pr-4 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400/50 transition-all"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-3 text-neutral-400 hover:text-white"
+                className="absolute right-3 top-2.5 text-slate-400 hover:text-white"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -153,11 +155,21 @@ export const TransactionsView: React.FC = () => {
           </div>
           <button
             type="button"
+            onClick={() => setIsImportStatementOpen(true)}
+            title="Import Bank Statement (CSV / Excel)"
+            aria-label="Import Bank Statement"
+            id="btn-import-statement"
+            className="p-2.5 rounded-lg bg-[#111827] border border-[#1f293d] text-slate-300 hover:text-white hover:bg-[#161e2e] active:scale-95 transition-all shrink-0 flex items-center justify-center"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+          </button>
+          <button
+            type="button"
             onClick={() => setIsSplitBillOpen(true)}
             title="Split Bill with Friends"
-            className="p-2.5 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-neutral-300 hover:text-white hover:bg-white/[0.08] active:scale-95 transition-all shrink-0 flex items-center justify-center"
+            className="p-2.5 rounded-lg bg-[#111827] border border-[#1f293d] text-slate-300 hover:text-white hover:bg-[#161e2e] active:scale-95 transition-all shrink-0 flex items-center justify-center"
           >
-            <Users className="w-4 h-4 text-neutral-300" />
+            <Users className="w-4 h-4 text-amber-400" />
           </button>
         </div>
 
@@ -168,10 +180,10 @@ export const TransactionsView: React.FC = () => {
               key={t}
               type="button"
               onClick={() => setSelectedType(t)}
-              className={`px-3 py-1 rounded-xl text-xs font-medium capitalize shrink-0 border transition-all ${
+              className={`px-3 py-1 rounded text-xs font-semibold capitalize shrink-0 border transition-all ${
                 selectedType === t
-                  ? 'bg-white text-black border-white shadow-sm font-semibold'
-                  : 'bg-white/[0.04] border-white/[0.06] text-neutral-400 hover:text-white'
+                  ? 'bg-amber-500 text-slate-950 border-amber-400 shadow-sm'
+                  : 'bg-[#111827] border-[#1f293d] text-slate-400 hover:text-white'
               }`}
             >
               {t}
@@ -182,11 +194,11 @@ export const TransactionsView: React.FC = () => {
           <select
             value={selectedAccount}
             onChange={(e) => setSelectedAccount(e.target.value)}
-            className="bg-white/[0.04] border border-white/[0.08] text-neutral-300 text-xs rounded-xl px-2.5 py-1 focus:outline-none shrink-0"
+            className="bg-[#111827] border border-[#1f293d] text-slate-300 text-xs rounded px-2.5 py-1 focus:outline-none shrink-0"
           >
-            <option value="all" className="bg-neutral-900 text-white">All Accounts</option>
+            <option value="all" className="bg-[#111827] text-white">All Accounts</option>
             {accounts.map((a) => (
-              <option key={a.id} value={a.id} className="bg-neutral-900 text-white">
+              <option key={a.id} value={a.id} className="bg-[#111827] text-white">
                 {a.name}
               </option>
             ))}
@@ -196,11 +208,11 @@ export const TransactionsView: React.FC = () => {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="bg-white/[0.04] border border-white/[0.08] text-neutral-300 text-xs rounded-xl px-2.5 py-1 focus:outline-none shrink-0"
+            className="bg-[#111827] border border-[#1f293d] text-slate-300 text-xs rounded px-2.5 py-1 focus:outline-none shrink-0"
           >
-            <option value="all" className="bg-neutral-900 text-white">All Categories</option>
+            <option value="all" className="bg-[#111827] text-white">All Categories</option>
             {categories.map((c) => (
-              <option key={c.id} value={c.id} className="bg-neutral-900 text-white">
+              <option key={c.id} value={c.id} className="bg-[#111827] text-white">
                 {c.name}
               </option>
             ))}
@@ -210,25 +222,25 @@ export const TransactionsView: React.FC = () => {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="bg-white/[0.04] border border-white/[0.08] text-neutral-300 text-xs rounded-xl px-2.5 py-1 focus:outline-none shrink-0"
+            className="bg-[#111827] border border-[#1f293d] text-slate-300 text-xs rounded px-2.5 py-1 focus:outline-none shrink-0"
           >
-            <option value="date-desc" className="bg-neutral-900 text-white">Newest First</option>
-            <option value="date-asc" className="bg-neutral-900 text-white">Oldest First</option>
-            <option value="amount-desc" className="bg-neutral-900 text-white">Amount: High to Low</option>
-            <option value="amount-asc" className="bg-neutral-900 text-white">Amount: Low to High</option>
+            <option value="date-desc" className="bg-[#111827] text-white">Newest First</option>
+            <option value="date-asc" className="bg-[#111827] text-white">Oldest First</option>
+            <option value="amount-desc" className="bg-[#111827] text-white">Amount: High to Low</option>
+            <option value="amount-asc" className="bg-[#111827] text-white">Amount: Low to High</option>
           </select>
         </div>
       </div>
 
-      {/* Transaction List / Groupings */}
+      {/* Transaction Day Groupings */}
       {filtered.length === 0 ? (
-        <div className="p-8 text-center bg-[#121214] border border-white/[0.08] rounded-3xl mt-4">
-          <div className="w-12 h-12 rounded-full bg-white/[0.04] border border-white/[0.06] text-neutral-400 flex items-center justify-center mx-auto mb-2.5">
-            <Search className="w-5 h-5 text-neutral-400" />
+        <div className="p-8 text-center bg-[#111827] border border-[#1f293d] rounded-xl mt-4">
+          <div className="w-12 h-12 rounded bg-[#161e2e] border border-[#28354b] text-slate-400 flex items-center justify-center mx-auto mb-2.5">
+            <Search className="w-5 h-5 text-amber-400" />
           </div>
-          <h3 className="text-[13px] font-semibold text-white mb-1">No Transactions Found</h3>
-          <p className="text-xs text-neutral-400 mb-3 max-w-xs mx-auto">
-            Try adjusting your search or filters, or log a new transaction.
+          <h3 className="mono text-xs font-bold uppercase tracking-wider text-white mb-1">NO MATCHING ENTRIES</h3>
+          <p className="text-xs text-slate-400 mb-3 max-w-xs mx-auto">
+            Try adjusting search or filters, or record a new campus expense.
           </p>
           <button
             type="button"
@@ -236,9 +248,9 @@ export const TransactionsView: React.FC = () => {
               setEditingTx(null);
               setIsAddTxOpen(true);
             }}
-            className="px-4 py-2 rounded-xl bg-white text-black font-semibold text-xs active:scale-95 transition-all shadow-sm"
+            className="px-4 py-2 rounded bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs active:scale-95 transition-all shadow-sm"
           >
-            + Add Transaction
+            + Record Transaction
           </button>
         </div>
       ) : (
@@ -252,19 +264,19 @@ export const TransactionsView: React.FC = () => {
             });
 
             return (
-              <div key={dateKey} className="bg-[#121214] border border-white/[0.08] rounded-3xl p-4 shadow-[0_4px_24px_rgba(0,0,0,0.4)]">
+              <div key={dateKey} className="bg-[#111827] border border-[#1f293d] rounded-xl p-4 shadow-sm">
                 {/* Day Header with Daily Total */}
-                <div className="flex items-center justify-between pb-2 mb-1 border-b border-white/[0.06] text-xs">
-                  <span className="font-semibold text-neutral-300">{formattedDateHeader}</span>
+                <div className="flex items-center justify-between pb-2 mb-1 border-b border-[#1f293d] text-xs">
+                  <span className="mono font-bold text-slate-300 uppercase">{formattedDateHeader}</span>
                   {dailyExpensePaise > 0 && (
-                    <span className="text-[11px] font-normal text-neutral-400">
-                      Spent: <strong className="text-white font-semibold tabular-nums">{formatINR(dailyExpensePaise)}</strong>
+                    <span className="mono text-[11px] font-normal text-slate-400">
+                      Dispatched: <strong className="text-rose-400 font-bold tabular-nums">{formatINR(dailyExpensePaise)}</strong>
                     </span>
                   )}
                 </div>
 
                 {/* Items in day */}
-                <div className="divide-y divide-white/[0.04]">
+                <div className="divide-y divide-[#1a2333]">
                   {items.map((tx) => {
                     const cat = categoryMap.get(tx.categoryId);
                     const isExpense = tx.type === 'expense';
@@ -274,13 +286,13 @@ export const TransactionsView: React.FC = () => {
                       <div
                         key={tx.id}
                         onClick={() => setActiveTxDetail(tx)}
-                        className="py-2.5 flex items-center justify-between cursor-pointer hover:bg-white/[0.03] px-2 -mx-2 rounded-xl transition-colors"
+                        className="py-2.5 flex items-center justify-between cursor-pointer hover:bg-[#161e2e]/80 px-2 -mx-2 rounded transition-colors"
                       >
                         <div className="flex items-center space-x-3">
                           <div
-                            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0"
+                            className="w-9 h-9 rounded flex items-center justify-center shrink-0 border border-[#28354b]"
                             style={{
-                              backgroundColor: cat ? `${cat.color}15` : 'rgba(255,255,255,0.04)',
+                              backgroundColor: cat ? `${cat.color}20` : '#161e2e',
                               color: cat?.color || '#94a3b8'
                             }}
                           >
@@ -288,15 +300,15 @@ export const TransactionsView: React.FC = () => {
                           </div>
 
                           <div>
-                            <div className="text-[13px] font-medium text-white truncate max-w-[170px] tracking-tight">
+                            <div className="text-[13px] font-bold text-white truncate max-w-[170px] tracking-tight">
                               {tx.merchant || cat?.name || 'Transaction'}
                             </div>
-                            <div className="text-[11px] text-neutral-400 flex items-center gap-1.5">
+                            <div className="mono text-[11px] text-slate-400 flex items-center gap-1.5">
                               <span>{accountMap.get(tx.accountId) || 'Account'}</span>
                               {tx.subCategory && (
                                 <>
-                                  <span className="text-neutral-600">•</span>
-                                  <span className="truncate max-w-[80px] text-neutral-400">{tx.subCategory}</span>
+                                  <span className="text-slate-600">•</span>
+                                  <span className="truncate max-w-[80px] text-slate-400">{tx.subCategory}</span>
                                 </>
                               )}
                             </div>
@@ -305,18 +317,18 @@ export const TransactionsView: React.FC = () => {
 
                         <div className="text-right">
                           <div
-                            className={`text-[13px] font-semibold tabular-nums tracking-tight ${
+                            className={`mono text-[13px] font-bold tabular-nums tracking-tight ${
                               isIncome
                                 ? 'text-emerald-400'
                                 : isExpense
-                                ? 'text-white'
-                                : 'text-neutral-300'
+                                ? 'text-rose-400'
+                                : 'text-slate-300'
                             }`}
                           >
                             {isIncome ? '+' : isExpense ? '-' : ''}
                             {formatINR(tx.amountPaise)}
                           </div>
-                          <span className="text-[9px] uppercase tracking-wider font-medium px-1.5 py-0.5 rounded bg-black/60 text-neutral-400 border border-white/[0.06]">
+                          <span className="mono text-[9px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded bg-[#161e2e] text-slate-400 border border-[#28354b]">
                             {tx.paymentMethod}
                           </span>
                         </div>
@@ -332,87 +344,87 @@ export const TransactionsView: React.FC = () => {
 
       {/* Detail / Action Bottom Sheet Modal */}
       {activeTxDetail && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
-          <div className="w-full max-w-md bg-[#121214] border-t sm:border border-white/[0.1] rounded-t-[32px] sm:rounded-3xl p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="w-full max-w-md bg-[#111827] border-t sm:border border-[#1f293d] rounded-t-2xl sm:rounded-xl p-6 shadow-2xl">
             {/* Grab Handle */}
-            <div className="w-9 h-1 rounded-full bg-white/20 mx-auto mb-4 sm:hidden" />
+            <div className="w-10 h-1 rounded-full bg-slate-700 mx-auto mb-4 sm:hidden" />
 
-            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
-              <h3 className="text-[13px] font-semibold text-white">Transaction Details</h3>
+            <div className="flex items-center justify-between pb-3 border-b border-[#1f293d]">
+              <h3 className="mono text-xs font-bold uppercase tracking-wider text-slate-300">MANIFEST ENTRY AUDIT</h3>
               <button
                 type="button"
                 onClick={() => setActiveTxDetail(null)}
-                className="p-1 rounded-full text-neutral-400 hover:text-white hover:bg-white/[0.08] transition-colors"
+                className="p-1 rounded text-slate-400 hover:text-white hover:bg-[#161e2e] transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="py-4 space-y-3.5">
-              <div className="text-center py-2">
-                <span className="text-[11px] uppercase font-semibold text-neutral-400 block mb-0.5 tracking-wider">
-                  {activeTxDetail.type}
+              <div className="text-center py-2 bg-[#161e2e] border border-[#28354b] rounded-lg">
+                <span className="mono text-[10px] uppercase font-bold text-slate-400 block mb-0.5 tracking-wider">
+                  ENTRY TYPE: {activeTxDetail.type}
                 </span>
                 <span
-                  className={`text-3xl font-extrabold tabular-nums tracking-tight ${
+                  className={`mono text-3xl font-extrabold tabular-nums tracking-tight ${
                     activeTxDetail.type === 'income'
                       ? 'text-emerald-400'
                       : activeTxDetail.type === 'expense'
-                      ? 'text-white'
-                      : 'text-neutral-200'
+                      ? 'text-rose-400'
+                      : 'text-slate-200'
                   }`}
                 >
                   {formatINR(activeTxDetail.amountPaise, { showPaise: true })}
                 </span>
               </div>
 
-              <div className="bg-black/60 rounded-2xl p-3.5 space-y-2 text-xs border border-white/[0.06]">
+              <div className="bg-[#161e2e] rounded-lg p-3.5 space-y-2 text-xs border border-[#28354b]">
                 <div className="flex justify-between">
-                  <span className="text-neutral-400">Merchant / Title</span>
-                  <span className="font-medium text-white">{activeTxDetail.merchant}</span>
+                  <span className="text-slate-400">Merchant / Title</span>
+                  <span className="font-bold text-white">{activeTxDetail.merchant}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-neutral-400">Category</span>
-                  <span className="font-medium text-white">
+                  <span className="text-slate-400">Category</span>
+                  <span className="font-semibold text-white">
                     {categoryMap.get(activeTxDetail.categoryId)?.name || activeTxDetail.categoryId}
                   </span>
                 </div>
                 {activeTxDetail.subCategory && (
                   <div className="flex justify-between">
-                    <span className="text-neutral-400">Subcategory</span>
+                    <span className="text-slate-400">Subcategory</span>
                     <span className="font-medium text-white">{activeTxDetail.subCategory}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-neutral-400">Account</span>
-                  <span className="font-medium text-white">
+                  <span className="text-slate-400">Account</span>
+                  <span className="mono font-semibold text-white">
                     {accountMap.get(activeTxDetail.accountId) || activeTxDetail.accountId}
                   </span>
                 </div>
                 {activeTxDetail.toAccountId && (
                   <div className="flex justify-between">
-                    <span className="text-neutral-400">To Account</span>
-                    <span className="font-medium text-white">
+                    <span className="text-slate-400">To Account</span>
+                    <span className="mono font-semibold text-white">
                       {accountMap.get(activeTxDetail.toAccountId) || activeTxDetail.toAccountId}
                     </span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-neutral-400">Payment Method</span>
-                  <span className="font-medium text-white uppercase">
+                  <span className="text-slate-400">Payment Method</span>
+                  <span className="mono font-semibold text-amber-400 uppercase">
                     {activeTxDetail.paymentMethod}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-neutral-400">Date</span>
-                  <span className="font-medium text-white">
+                  <span className="text-slate-400">Date</span>
+                  <span className="mono font-medium text-white">
                     {formatFriendlyDate(activeTxDetail.date)}
                   </span>
                 </div>
                 {activeTxDetail.notes && (
-                  <div className="pt-2 border-t border-white/[0.06]">
-                    <span className="text-neutral-400 block mb-0.5">Notes</span>
-                    <p className="text-neutral-200">{activeTxDetail.notes}</p>
+                  <div className="pt-2 border-t border-[#1f293d]">
+                    <span className="mono text-[10px] text-slate-400 block mb-0.5">NOTES</span>
+                    <p className="text-slate-300">{activeTxDetail.notes}</p>
                   </div>
                 )}
               </div>
@@ -427,18 +439,18 @@ export const TransactionsView: React.FC = () => {
                   setActiveTxDetail(null);
                   setIsAddTxOpen(true);
                 }}
-                className="py-2.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-white font-medium text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all"
+                className="py-2 rounded bg-[#161e2e] hover:bg-[#1f293d] border border-[#28354b] text-white font-semibold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all"
               >
-                <Edit2 className="w-3.5 h-3.5" />
+                <Edit2 className="w-3.5 h-3.5 text-amber-400" />
                 Edit
               </button>
 
               <button
                 type="button"
                 onClick={() => handleDuplicate(activeTxDetail)}
-                className="py-2.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-white font-medium text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all"
+                className="py-2 rounded bg-[#161e2e] hover:bg-[#1f293d] border border-[#28354b] text-white font-semibold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all"
               >
-                <Copy className="w-3.5 h-3.5" />
+                <Copy className="w-3.5 h-3.5 text-slate-300" />
                 Duplicate
               </button>
 
@@ -446,15 +458,15 @@ export const TransactionsView: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => handleDelete(activeTxDetail.id)}
-                  className="py-2.5 rounded-xl bg-rose-600 text-white font-semibold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all animate-pulse"
+                  className="py-2 rounded bg-rose-600 text-white font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-all animate-pulse"
                 >
-                  Confirm Delete
+                  Confirm
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={() => setConfirmDeleteId(activeTxDetail.id)}
-                  className="py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-medium text-xs flex items-center justify-center gap-1.5 border border-rose-500/20 active:scale-95 transition-all"
+                  className="py-2 rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-semibold text-xs flex items-center justify-center gap-1.5 border border-rose-500/30 active:scale-95 transition-all"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   Delete

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, height=844, initial-scale=1.0">
+<title>Pennywise — Split-Flap Concourse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 390px; height: 844px; overflow: hidden;
+    background: #0d0e11; color: #f1f5f9;
+    font-family: 'Share Tech Mono', monospace;
+    padding: 48px 16px 20px 16px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .board-header {
+    background: #181a20; border: 1px solid #2a2e39; border-radius: 6px;
+    padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .board-title { font-size: 13px; font-weight: 700; color: #e2e8f0; letter-spacing: 0.1em; }
+  .amber-lamp { color: #f59e0b; font-size: 11px; display: flex; align-items: center; gap: 4px; }
+  .lamp-dot { width: 8px; height: 8px; background: #f59e0b; border-radius: 50%; box-shadow: 0 0 8px #f59e0b; }
+
+  .split-flap-tile {
+    background: #13151a; border: 2px solid #242833; border-radius: 8px; padding: 14px;
+    position: relative;
+  }
+  .flap-label { font-size: 11px; color: #64748b; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .flaps-row { display: flex; gap: 4px; }
+  .flap-char {
+    background: #1f232c; border: 1px solid #333a47; color: #ffffff;
+    font-size: 26px; font-weight: 700; padding: 4px 8px; border-radius: 4px;
+    position: relative;
+  }
+  .flap-char::after {
+    content: ''; position: absolute; left: 0; right: 0; top: 50%;
+    height: 1px; background: rgba(0,0,0,0.6);
+  }
+
+  .allowance-strip {
+    background: #181b22; border-left: 4px solid #f59e0b; padding: 12px 14px;
+    border-radius: 0 6px 6px 0; display: flex; justify-content: space-between; align-items: center;
+  }
+  .allowance-amt { font-size: 22px; color: #f59e0b; font-weight: 700; }
+
+  .timetable-head {
+    display: flex; justify-content: space-between; font-size: 11px; color: #64748b;
+    border-bottom: 1px solid #232732; padding-bottom: 4px;
+  }
+  .timetable-rows { display: flex; flex-direction: column; gap: 6px; }
+  .table-row {
+    background: #14171f; border: 1px solid #232732; border-radius: 4px;
+    padding: 8px 10px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .row-desc { font-size: 12px; color: #e2e8f0; }
+  .row-meta { font-size: 10px; color: #64748b; }
+  .row-num { font-size: 13px; font-weight: 700; }
+  .debit-lamp { color: #f87171; }
+  .credit-lamp { color: #34d399; }
+
+  .concourse-nav {
+    margin-top: auto; background: #13161c; border-top: 1px solid #242833;
+    padding-top: 8px; display: flex; justify-content: space-around; font-size: 11px; color: #64748b;
+  }
+  .concourse-active { color: #f59e0b; }
+</style>
+</head>
+<body>
+  <div class="board-header">
+    <div class="board-title">PENNYWISE CONCOURSE</div>
+    <div class="amber-lamp"><span class="lamp-dot"></span>LIVE TRACKING</div>
+  </div>
+
+  <div class="split-flap-tile">
+    <div class="flap-label">NET BALANCE // TRACKED CASH</div>
+    <div class="flaps-row">
+      <div class="flap-char">₹</div>
+      <div class="flap-char">1</div>
+      <div class="flap-char">2</div>
+      <div class="flap-char">,</div>
+      <div class="flap-char">4</div>
+      <div class="flap-char">5</div>
+      <div class="flap-char">0</div>
+    </div>
+  </div>
+
+  <div class="allowance-strip">
+    <div>
+      <div style="font-size: 10px; color: #94a3b8; letter-spacing: 0.05em;">ALLOWANCE PER DAY</div>
+      <div class="allowance-amt">₹415 / DAY</div>
+    </div>
+    <div style="text-align: right; font-size: 10px; color: #94a3b8;">
+      <div>STATUS: ON TRACK</div>
+      <div style="color: #f59e0b">30 DAYS REMAINING</div>
+    </div>
+  </div>
+
+  <div class="timetable-head">
+    <span>TIMETABLE // EXPENSE</span>
+    <span>DISPATCH AMOUNT</span>
+  </div>
+
+  <div class="timetable-rows">
+    <div class="table-row">
+      <div>
+        <div class="row-desc">CAMPUS TAPRI — KADAK CHAI</div>
+        <div class="row-meta">16:15 HRS • PAYTM UPI</div>
+      </div>
+      <div class="row-num debit-lamp">-₹20.00</div>
+    </div>
+    <div class="table-row">
+      <div>
+        <div class="row-desc">ROOM SPLIT — ANIKET DUES</div>
+        <div class="row-meta">14:02 HRS • CLEARED</div>
+      </div>
+      <div class="row-num credit-lamp">+₹3,500.00</div>
+    </div>
+    <div class="table-row">
+      <div>
+        <div class="row-desc">ENGINEERING XEROX NOTES</div>
+        <div class="row-meta">11:30 HRS • CASH DISPATCH</div>
+      </div>
+      <div class="row-num debit-lamp">-₹85.00</div>
+    </div>
+  </div>
+
+  <div class="concourse-nav">
+    <span class="concourse-active">[BOARD]</span>
+    <span>[LIMITS]</span>
+    <span>[SPLIT]</span>
+    <span>[VAULT]</span>
+  </div>
+</body>
+</html>

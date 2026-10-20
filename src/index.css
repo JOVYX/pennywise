@@ -6,14 +6,35 @@
     --sar: env(safe-area-inset-right, 0px);
     --sab: env(safe-area-inset-bottom, 0px);
     --sal: env(safe-area-inset-left, 0px);
+
+    /* Precision Manifest Design Tokens */
+    --surface-root: #080b11;
+    --surface-shell: #0b0f17;
+    --surface-panel: #111827;
+    --surface-panel-raised: #161e2e;
+    --border-dim: #1a2333;
+    --border-default: #1f293d;
+    --border-highlight: #334155;
+    
+    --ink-primary: #f8fafc;
+    --ink-secondary: #94a3b8;
+    --ink-muted: #64748b;
+
+    --brand-amber: #f59e0b;
+    --brand-amber-dim: #78350f;
+    --brand-emerald: #10b981;
+    --brand-emerald-dim: #064e3b;
+    --brand-rose: #f43f5e;
+    --brand-rose-dim: #4c0519;
   }
 
   html {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
+    font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
-    letter-spacing: -0.012em;
-    background-color: #000000;
+    letter-spacing: -0.015em;
+    background-color: var(--surface-root);
+    color: var(--ink-primary);
   }
 
   body {
@@ -21,56 +42,88 @@
     padding-left: var(--sal);
     padding-right: var(--sar);
     padding-bottom: var(--sab);
-    background-color: #000000;
-    color: #f4f4f5;
+    background-color: var(--surface-root);
+    color: var(--ink-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
   }
 
-  /* Support tabular nums for consistent currency and ledger layout */
+  /* Strict tabular numbers for exact accounting & currency alignment */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
-    font-feature-settings: "tnum" 1, "cv02" 1, "cv03" 1, "cv04" 1, "cv11" 1;
+    font-feature-settings: "tnum" 1, "cv02" 1, "cv03" 1, "cv04" 1;
+  }
+
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-feature-settings: "tnum" 1;
   }
 }
 
-/* Apple Card / FinTech Glass Surfaces */
-.glass-surface {
-  background-color: rgba(18, 18, 20, 0.72);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Operational Manifest Surface Utilities */
+.manifest-panel {
+  background-color: #111827;
+  border: 1px solid #1f293d;
+  border-radius: 12px;
 }
 
-.glass-surface-subtle {
-  background-color: rgba(255, 255, 255, 0.035);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+.manifest-panel-raised {
+  background-color: #161e2e;
+  border: 1px solid #28354b;
+  border-radius: 12px;
 }
 
-.glass-surface-solid {
-  background-color: #121214;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+.manifest-card {
+  background-color: #111827;
+  border: 1px solid #1f293d;
+  border-radius: 14px;
 }
 
-/* Tactile iOS Press curve */
-.ios-press {
-  transition: transform 0.12s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.12s ease;
+.manifest-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid #1f293d;
+  background-color: #161e2e;
 }
-.ios-press:active {
+
+/* Subtle tactile button press */
+.tactile-btn {
+  transition: transform 0.1s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.1s ease;
+}
+.tactile-btn:active {
   transform: scale(0.98);
-  opacity: 0.88;
+  opacity: 0.9;
 }
 
-/* Custom smooth minimalist scrollbar */
+/* Clean operational scrollbar */
 ::-webkit-scrollbar {
-  width: 3px;
-  height: 3px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 9999px;
+  background: #1f293d;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: #334155;
 }
+
+@keyframes manifest-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: manifest-shake 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+

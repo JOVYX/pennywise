@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=390, height=844, initial-scale=1.0">
+<title>Pennywise — Fintech Dark Cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 390px; height: 844px; overflow: hidden;
+    background: #0f172a; color: #f8fafc;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    padding: 48px 16px 20px 16px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .header { display: flex; justify-content: space-between; align-items: center; }
+  .user-badge { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: #38bdf8; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .bell { width: 32px; height: 32px; border-radius: 50%; background: #1e293b; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+
+  .balance-card {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 1px solid #334155; border-radius: 16px; padding: 20px;
+  }
+  .card-top { font-size: 12px; color: #94a3b8; font-weight: 500; }
+  .balance-val { font-size: 32px; font-weight: 700; color: #ffffff; margin: 6px 0 16px 0; }
+  .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .action-pill {
+    background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 10px;
+    font-size: 12px; font-weight: 600; text-align: center; color: #38bdf8;
+  }
+
+  .allowance-card {
+    background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 14px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .allowance-tag { font-size: 11px; color: #94a3b8; }
+  .allowance-amt { font-size: 20px; font-weight: 700; color: #38bdf8; }
+
+  .feed-title { font-size: 13px; font-weight: 700; color: #94a3b8; margin-top: 4px; }
+  .feed { display: flex; flex-direction: column; gap: 8px; }
+  .tx-card {
+    background: #1e293b; border: 1px solid #293548; border-radius: 12px; padding: 12px 14px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .tx-title { font-size: 13px; font-weight: 600; color: #ffffff; }
+  .tx-sub { font-size: 11px; color: #64748b; }
+  .tx-val { font-size: 14px; font-weight: 700; }
+
+  .bottom-nav {
+    margin-top: auto; background: #1e293b; border-radius: 20px; padding: 12px 20px;
+    display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: #64748b;
+  }
+  .nav-active { color: #38bdf8; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="user-badge"><span class="avatar">🪙</span>Pennywise</div>
+    <div class="bell">🔔</div>
+  </div>
+
+  <div class="balance-card">
+    <div class="card-top">Total Available Balance</div>
+    <div class="balance-val">₹12,450.00</div>
+    <div class="actions-grid">
+      <div class="action-pill">+ Add Expense</div>
+      <div class="action-pill">👥 Split Bill</div>
+    </div>
+  </div>
+
+  <div class="allowance-card">
+    <div>
+      <div class="allowance-tag">Safe Daily Spend</div>
+      <div class="allowance-amt">₹415 / day</div>
+    </div>
+    <div style="text-align: right; font-size: 11px; color: #94a3b8;">
+      <div>30 Days Remaining</div>
+      <div style="color: #4ade80; font-weight: 600;">Conservative</div>
+    </div>
+  </div>
+
+  <div class="feed-title">Recent Transactions</div>
+
+  <div class="feed">
+    <div class="tx-card">
+      <div>
+        <div class="tx-title">Campus Tapri</div>
+        <div class="tx-sub">Food & Snacks • Paytm</div>
+      </div>
+      <div class="tx-val" style="color: #f87171;">-₹20.00</div>
+    </div>
+    <div class="tx-card">
+      <div>
+        <div class="tx-title">Aniket (Rent Share)</div>
+        <div class="tx-sub">Roommate Split • Settled</div>
+      </div>
+      <div class="tx-val" style="color: #4ade80;">+₹3,500.00</div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <span class="nav-active">Home</span>
+    <span>Transactions</span>
+    <span>Splitter</span>
+    <span>Settings</span>
+  </div>
+</body>
+</html>

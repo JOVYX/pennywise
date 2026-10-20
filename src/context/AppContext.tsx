@@ -37,6 +37,10 @@ interface AppContextType {
   isSplitBillOpen: boolean;
   setIsSplitBillOpen: (open: boolean) => void;
 
+  // Bank Statement Import Modal
+  isImportStatementOpen: boolean;
+  setIsImportStatementOpen: (open: boolean) => void;
+
   // Security App Lock
   isAppLocked: boolean;
   setIsAppLocked: (locked: boolean) => void;
@@ -58,6 +62,7 @@ interface AppContextType {
 
   // Actions
   saveTransaction: (tx: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }) => Promise<string>;
+  bulkImportTransactions: (txs: Array<Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>>) => Promise<number>;
   deleteTransaction: (id: string) => Promise<void>;
   updateSettings: (newSettings: Partial<AppSettings>) => Promise<void>;
   recordDebtPayment: (params: {
@@ -85,6 +90,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isAddTxOpen, setIsAddTxOpen] = useState<boolean>(false);
   const [editingTx, setEditingTx] = useState<Transaction | null>(null);
   const [isSplitBillOpen, setIsSplitBillOpen] = useState<boolean>(false);
+  const [isImportStatementOpen, setIsImportStatementOpen] = useState<boolean>(false);
   const [isAppLocked, setIsAppLocked] = useState<boolean>(false);
   const [hasCheckedLockInitial, setHasCheckedLockInitial] = useState<boolean>(false);
   const [isDbReady, setIsDbReady] = useState<boolean>(false);
@@ -190,6 +196,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     await db.transactions.put(txToSave);
     return id;
+  };
+
+  const bulkImportTransactions = async (
+    txs: Array<Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>>
+  ): Promise<number> => {
+    if (!txs || txs.length === 0) return 0;
+    const now = new Date().toISOString();
+    const records: Transaction[] = txs.map((t, index) => ({
+      ...t,
+      id: `tx-${Date.now()}-${index}-${Math.random().toString(36).substring(2, 7)}`,
+      createdAt: now,
+      updatedAt: now
+    }));
+    await db.transactions.bulkAdd(records);
+    return records.length;
   };
 
   const deleteTransaction = async (id: string): Promise<void> => {
@@ -345,6 +366,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setEditingTx,
         isSplitBillOpen,
         setIsSplitBillOpen,
+        isImportStatementOpen,
+        setIsImportStatementOpen,
         isAppLocked,
         setIsAppLocked,
         accounts,
@@ -359,6 +382,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isLoading: !isDbReady,
         financialSummary,
         saveTransaction,
+        bulkImportTransactions,
         deleteTransaction,
         updateSettings,
         recordDebtPayment,

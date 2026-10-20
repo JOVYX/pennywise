@@ -93,17 +93,17 @@ export const LockScreen: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-neutral-950 flex flex-col items-center justify-between p-6 select-none animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[100] bg-[#0b0f17] flex flex-col items-center justify-between p-6 select-none animate-in fade-in duration-200">
       {/* Top Header / Status */}
       <div className="flex flex-col items-center mt-12">
-        <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4 shadow-xl shadow-emerald-500/10">
-          <Lock className="w-8 h-8" />
+        <div className="w-14 h-14 rounded-2xl bg-[#161e2e] border border-[#1f293d] flex items-center justify-center text-amber-400 mb-4 shadow-lg shadow-amber-400/5">
+          <Lock className="w-6 h-6" />
         </div>
-        <h1 className="text-xl font-bold text-white tracking-tight">Pennywise Locked</h1>
-        <p className="text-xs text-neutral-400 mt-1">Enter your 4-digit passcode to continue</p>
+        <h1 className="text-lg font-bold text-white tracking-tight">Pennywise Locked</h1>
+        <p className="text-xs text-slate-400 font-mono mt-1">Enter your 4-digit passcode to continue</p>
 
         {/* 4 PIN Dots */}
-        <div className={`flex items-center gap-4 mt-8 transition-transform ${isShaking ? 'animate-bounce' : ''}`}>
+        <div className={`flex items-center gap-3.5 mt-8 transition-transform ${isShaking ? 'animate-shake' : ''}`}>
           {[0, 1, 2, 3].map((idx) => {
             const filled = pin.length > idx;
             return (
@@ -111,8 +111,8 @@ export const LockScreen: React.FC = () => {
                 key={idx}
                 className={`w-3.5 h-3.5 rounded-full transition-all duration-200 ${
                   filled
-                    ? 'bg-emerald-400 scale-125 shadow-md shadow-emerald-500/50'
-                    : 'bg-neutral-800 border border-neutral-700'
+                    ? 'bg-amber-400 scale-125 shadow-md shadow-amber-400/40 border border-amber-300'
+                    : 'bg-[#161e2e] border border-[#1f293d]'
                 }`}
               />
             );
@@ -120,7 +120,7 @@ export const LockScreen: React.FC = () => {
         </div>
 
         {errorMsg && (
-          <div className="flex items-center gap-1.5 text-xs text-rose-400 mt-4 px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 animate-in fade-in">
+          <div className="flex items-center gap-1.5 text-xs text-rose-400 mt-4 px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 font-mono animate-in fade-in">
             <AlertCircle className="w-3.5 h-3.5 shrink-0" />
             <span>{errorMsg}</span>
           </div>
@@ -129,13 +129,13 @@ export const LockScreen: React.FC = () => {
 
       {/* Numeric Keypad */}
       <div className="w-full max-w-xs mb-8">
-        <div className="grid grid-cols-3 gap-y-4 gap-x-6 text-center">
+        <div className="grid grid-cols-3 gap-y-3.5 gap-x-5 text-center">
           {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((num) => (
             <button
               key={num}
               type="button"
               onClick={() => handleDigit(num)}
-              className="w-18 h-18 mx-auto rounded-full bg-neutral-900/90 active:bg-neutral-800 border border-neutral-800 text-2xl font-medium text-white flex items-center justify-center transition-all active:scale-95 shadow-sm"
+              className="w-16 h-16 mx-auto rounded-2xl bg-[#111827] active:bg-[#1f293d] border border-[#1f293d] text-2xl font-mono font-medium text-white flex items-center justify-center transition-all active:scale-95 shadow-sm"
             >
               {num}
             </button>
@@ -147,10 +147,10 @@ export const LockScreen: React.FC = () => {
               <button
                 type="button"
                 onClick={handleBiometricUnlock}
-                className="w-18 h-18 rounded-full bg-emerald-500/10 active:bg-emerald-500/20 text-emerald-400 flex items-center justify-center transition-all active:scale-95 border border-emerald-500/20"
+                className="w-16 h-16 rounded-2xl bg-[#161e2e] active:bg-[#1f293d] text-amber-400 flex items-center justify-center transition-all active:scale-95 border border-[#1f293d]"
                 title="Face ID / Touch ID"
               >
-                <Fingerprint className="w-7 h-7" />
+                <Fingerprint className="w-6 h-6" />
               </button>
             )}
           </div>
@@ -159,7 +159,7 @@ export const LockScreen: React.FC = () => {
           <button
             type="button"
             onClick={() => handleDigit('0')}
-            className="w-18 h-18 mx-auto rounded-full bg-neutral-900/90 active:bg-neutral-800 border border-neutral-800 text-2xl font-medium text-white flex items-center justify-center transition-all active:scale-95 shadow-sm"
+            className="w-16 h-16 mx-auto rounded-2xl bg-[#111827] active:bg-[#1f293d] border border-[#1f293d] text-2xl font-mono font-medium text-white flex items-center justify-center transition-all active:scale-95 shadow-sm"
           >
             0
           </button>
@@ -170,10 +170,10 @@ export const LockScreen: React.FC = () => {
               <button
                 type="button"
                 onClick={handleDelete}
-                className="w-18 h-18 rounded-full text-neutral-400 active:text-white flex items-center justify-center transition-all active:scale-95"
+                className="w-16 h-16 rounded-2xl text-slate-400 active:text-white flex items-center justify-center transition-all active:scale-95"
                 title="Delete"
               >
-                <Delete className="w-6 h-6" />
+                <Delete className="w-5 h-5" />
               </button>
             )}
           </div>

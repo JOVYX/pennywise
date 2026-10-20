@@ -24,83 +24,83 @@ export const MonthlyOverviewCards: React.FC = () => {
       {/* 3 Metric Cards Grid */}
       <div className="grid grid-cols-3 gap-2">
         {/* Income Card */}
-        <div className="bg-[#121214] border border-white/[0.08] rounded-2xl p-3 flex flex-col justify-between">
+        <div className="bg-[#111827] border border-[#1f293d] rounded-xl p-3 flex flex-col justify-between">
           <div className="flex items-center space-x-1 text-emerald-400 mb-1">
             <ArrowUpRight className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-              Income
+            <span className="mono text-[9px] font-bold uppercase tracking-wider text-slate-400">
+              INCOME
             </span>
           </div>
-          <div className="text-sm sm:text-base font-bold text-white truncate tabular-nums tracking-tight">
+          <div className="mono text-sm sm:text-base font-bold text-white truncate tabular-nums tracking-tight">
             {formatINR(financialSummary.totalIncomeReceivedThisMonthPaise, {
               showPaise: false
             })}
           </div>
-          <span className="text-[10px] text-zinc-500 mt-0.5">Received</span>
+          <span className="mono text-[10px] text-slate-500 mt-0.5">Received</span>
         </div>
 
         {/* Expenses Card */}
-        <div className="bg-[#121214] border border-white/[0.08] rounded-2xl p-3 flex flex-col justify-between">
+        <div className="bg-[#111827] border border-[#1f293d] rounded-xl p-3 flex flex-col justify-between">
           <div className="flex items-center space-x-1 text-rose-400 mb-1">
             <ArrowDownRight className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-              Spent
+            <span className="mono text-[9px] font-bold uppercase tracking-wider text-slate-400">
+              EXPENSE
             </span>
           </div>
-          <div className="text-sm sm:text-base font-bold text-white truncate tabular-nums tracking-tight">
+          <div className="mono text-sm sm:text-base font-bold text-white truncate tabular-nums tracking-tight">
             {formatINR(financialSummary.totalExpensesThisMonthPaise, {
               showPaise: false
             })}
           </div>
-          <span className="text-[10px] text-zinc-500 mt-0.5">This Month</span>
+          <span className="mono text-[10px] text-slate-500 mt-0.5">Dispatched</span>
         </div>
 
         {/* Savings Rate Card */}
-        <div className="bg-[#121214] border border-white/[0.08] rounded-2xl p-3 flex flex-col justify-between">
-          <div className="flex items-center space-x-1 text-zinc-300 mb-1">
-            <PiggyBank className="w-3.5 h-3.5 text-zinc-400" />
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-zinc-400">
-              Saved
+        <div className="bg-[#111827] border border-[#1f293d] rounded-xl p-3 flex flex-col justify-between">
+          <div className="flex items-center space-x-1 text-amber-400 mb-1">
+            <PiggyBank className="w-3.5 h-3.5" />
+            <span className="mono text-[9px] font-bold uppercase tracking-wider text-slate-400">
+              SAVINGS
             </span>
           </div>
-          <div className="text-sm sm:text-base font-bold text-emerald-400 tabular-nums tracking-tight">
+          <div className="mono text-sm sm:text-base font-bold text-emerald-400 tabular-nums tracking-tight">
             {financialSummary.savingsRatePercentage}%
           </div>
-          <span className="text-[10px] text-zinc-500 mt-0.5">Net Rate</span>
+          <span className="mono text-[10px] text-slate-500 mt-0.5">Retained</span>
         </div>
       </div>
 
       {/* Budget Utilization Card */}
-      <div className="bg-[#121214] border border-white/[0.08] rounded-2xl p-4">
+      <div className="bg-[#111827] border border-[#1f293d] rounded-xl p-4">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-1.5">
-            <Target className="w-4 h-4 text-zinc-400" />
-            <span className="text-xs font-semibold text-white">Monthly Target</span>
+            <Target className="w-4 h-4 text-amber-400" />
+            <span className="mono text-xs font-bold text-white uppercase tracking-wider">MONTHLY BUDGET CONSUMPTION</span>
           </div>
           {currentBudget?.overallLimitPaise ? (
-            <span className="text-xs font-semibold text-zinc-300 tabular-nums">
-              {budgetPct}% spent
+            <span className="mono text-xs font-bold text-slate-300 tabular-nums">
+              {budgetPct}%
             </span>
           ) : (
             <button
               type="button"
               onClick={() => setSelectedTab('budgets')}
-              className="text-xs font-semibold text-emerald-400 hover:underline"
+              className="mono text-xs font-bold text-amber-400 hover:underline"
             >
-              + Set Target
+              + SET CAP
             </button>
           )}
         </div>
 
         {currentBudget?.overallLimitPaise ? (
           <div>
-            <div className="w-full h-1.5 bg-white/[0.06] rounded-full overflow-hidden mb-2">
+            <div className="w-full h-2 bg-[#0b0f17] border border-[#1f293d] rounded-full overflow-hidden mb-2">
               <div
                 className={`h-full ${progressColor} transition-all duration-300`}
                 style={{ width: `${Math.min(100, budgetPct)}%` }}
               />
             </div>
-            <div className="flex justify-between items-center text-[11px] text-zinc-400">
+            <div className="flex justify-between items-center mono text-[11px] text-slate-400">
               <span>
                 Spent:{' '}
                 <strong className="text-white">
@@ -108,16 +108,16 @@ export const MonthlyOverviewCards: React.FC = () => {
                 </strong>
               </span>
               <span>
-                Limit:{' '}
-                <strong className="text-zinc-300">
+                Cap:{' '}
+                <strong className="text-slate-300">
                   {formatINR(currentBudget.overallLimitPaise)}
                 </strong>
               </span>
             </div>
           </div>
         ) : (
-          <p className="text-[11px] text-zinc-400">
-            No monthly limit configured for this month. Set a budget to track spending pace.
+          <p className="text-xs text-slate-400">
+            No spending cap configured for this month. Set a budget ceiling to monitor burnout pace.
           </p>
         )}
       </div>

@@ -77,41 +77,41 @@ export const OnboardingModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-      <div className="w-full max-w-sm bg-neutral-900 border border-neutral-800 rounded-3xl p-6 shadow-2xl relative overflow-hidden flex flex-col justify-between max-h-[90vh]">
+      <div className="w-full max-w-sm bg-[#111827] border border-[#1f293d] rounded-2xl p-5 shadow-2xl relative overflow-hidden flex flex-col justify-between max-h-[90vh]">
         {/* Step Indicator */}
-        <div className="flex items-center justify-between pb-3 mb-2 border-b border-neutral-800/80">
+        <div className="flex items-center justify-between pb-3 mb-2 border-b border-[#1f293d]">
           <div className="flex items-center space-x-1.5">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400">
               Welcome to Pennywise
             </span>
           </div>
-          <span className="text-[10px] font-bold text-neutral-400">Step {step} of 3</span>
+          <span className="text-[10px] font-mono text-slate-400 font-semibold">Step {step} of 3</span>
         </div>
 
         {/* STEP 1: Welcome & Currency */}
         {step === 1 && (
           <div className="space-y-4 py-2">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-neutral-950 font-black text-2xl shadow-lg shadow-emerald-500/20 mx-auto">
+            <div className="w-13 h-13 rounded-xl bg-amber-400 text-black font-mono font-black text-2xl flex items-center justify-center mx-auto shadow-lg shadow-amber-400/20">
               ₹
             </div>
             <div className="text-center">
-              <h3 className="text-base font-extrabold text-white">
+              <h3 className="text-sm font-bold text-white tracking-tight">
                 Personal Finance for Indian Students
               </h3>
-              <p className="text-xs text-neutral-400 mt-1 leading-relaxed">
+              <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                 Take full control of irregular pocket money, PG rents, tapri chai expenses, and
-                emergency savings on your iPhone.
+                emergency savings on your device.
               </p>
             </div>
 
-            <div className="p-3.5 bg-neutral-950 rounded-2xl border border-neutral-800 space-y-1.5 text-xs">
+            <div className="p-3 bg-[#0b0f17] rounded-xl border border-[#1f293d] space-y-1.5 text-xs font-mono">
               <div className="flex justify-between items-center text-white">
-                <span className="text-neutral-400">Default Currency:</span>
-                <span className="font-bold text-emerald-400">Indian Rupee (INR ₹)</span>
+                <span className="text-slate-400">Default Currency:</span>
+                <span className="font-bold text-amber-400">Indian Rupee (INR ₹)</span>
               </div>
               <div className="flex justify-between items-center text-white">
-                <span className="text-neutral-400">Storage Architecture:</span>
-                <span className="font-bold text-neutral-200">Local-First (IndexedDB)</span>
+                <span className="text-slate-400">Storage Architecture:</span>
+                <span className="font-bold text-slate-300">Local-First (IndexedDB)</span>
               </div>
             </div>
 
@@ -119,7 +119,7 @@ export const OnboardingModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="w-full py-3 rounded-xl bg-emerald-500 text-neutral-950 font-bold text-xs shadow-md flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
+                className="w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs shadow-md flex items-center justify-center gap-1.5 active:scale-[0.98] transition-all"
               >
                 <span>Set Up My Balances</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -128,7 +128,7 @@ export const OnboardingModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handleFinishOnboarding(true)}
-                className="w-full py-2.5 rounded-xl bg-neutral-800 text-neutral-300 font-semibold text-xs border border-neutral-700 flex items-center justify-center gap-1.5 hover:bg-neutral-700 transition-all"
+                className="w-full py-2.5 rounded-xl bg-[#161e2e] text-slate-300 font-mono font-medium text-xs border border-[#1f293d] flex items-center justify-center gap-1.5 hover:bg-[#1f293d] hover:text-white transition-all"
               >
                 <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                 <span>Explore with Student Sample Data</span>
@@ -141,46 +141,46 @@ export const OnboardingModal: React.FC = () => {
         {step === 2 && (
           <div className="space-y-3.5 py-1">
             <div>
-              <h3 className="text-sm font-bold text-white">Your Opening Balances</h3>
-              <p className="text-[11px] text-neutral-400">
+              <h3 className="text-sm font-bold text-white tracking-tight">Your Opening Balances</h3>
+              <p className="text-[11px] text-slate-400">
                 Enter your current cash available across your primary accounts.
               </p>
             </div>
 
             <div className="space-y-2.5 text-xs">
               <div>
-                <label className="text-neutral-300 font-semibold block mb-1">
+                <label className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold block mb-1">
                   Primary Bank (SBI / HDFC / Canara) ₹
                 </label>
                 <input
                   type="number"
                   value={bankBal}
                   onChange={(e) => setBankBal(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-white font-bold tabular-nums focus:outline-none"
+                  className="w-full bg-[#0b0f17] border border-[#1f293d] rounded-xl px-3 py-2 text-white font-mono font-bold tabular-nums focus:outline-none focus:border-amber-400/50"
                 />
               </div>
 
               <div>
-                <label className="text-neutral-300 font-semibold block mb-1">
+                <label className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold block mb-1">
                   UPI / Paytm / GPay Wallet ₹
                 </label>
                 <input
                   type="number"
                   value={walletBal}
                   onChange={(e) => setWalletBal(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-white font-bold tabular-nums focus:outline-none"
+                  className="w-full bg-[#0b0f17] border border-[#1f293d] rounded-xl px-3 py-2 text-white font-mono font-bold tabular-nums focus:outline-none focus:border-amber-400/50"
                 />
               </div>
 
               <div>
-                <label className="text-neutral-300 font-semibold block mb-1">
+                <label className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold block mb-1">
                   Cash in Pocket ₹
                 </label>
                 <input
                   type="number"
                   value={cashBal}
                   onChange={(e) => setCashBal(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-white font-bold tabular-nums focus:outline-none"
+                  className="w-full bg-[#0b0f17] border border-[#1f293d] rounded-xl px-3 py-2 text-white font-mono font-bold tabular-nums focus:outline-none focus:border-amber-400/50"
                 />
               </div>
             </div>
@@ -189,14 +189,14 @@ export const OnboardingModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="py-2.5 px-4 rounded-xl bg-neutral-800 text-neutral-300 font-semibold text-xs"
+                className="py-2.5 px-4 rounded-xl bg-[#161e2e] border border-[#1f293d] text-slate-300 font-mono font-medium text-xs hover:text-white"
               >
                 Back
               </button>
               <button
                 type="button"
                 onClick={() => setStep(3)}
-                className="flex-1 py-2.5 rounded-xl bg-emerald-500 text-neutral-950 font-bold text-xs flex items-center justify-center gap-1"
+                className="flex-1 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs flex items-center justify-center gap-1 active:scale-[0.98] transition-all"
               >
                 <span>Continue</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -209,44 +209,44 @@ export const OnboardingModal: React.FC = () => {
         {step === 3 && (
           <div className="space-y-3.5 py-1">
             <div>
-              <h3 className="text-sm font-bold text-white">Set Your First Savings Goal</h3>
-              <p className="text-[11px] text-neutral-400">
+              <h3 className="text-sm font-bold text-white tracking-tight">Set Your First Savings Goal</h3>
+              <p className="text-[11px] text-slate-400">
                 Having an emergency fund prevents needing emergency loans or borrowing from friends.
               </p>
             </div>
 
             <div className="space-y-2.5 text-xs">
               <div>
-                <label className="text-neutral-300 font-semibold block mb-1">Goal Name</label>
+                <label className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold block mb-1">Goal Name</label>
                 <input
                   type="text"
                   value={savingsGoalName}
                   onChange={(e) => setSavingsGoalName(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-white font-bold focus:outline-none"
+                  className="w-full bg-[#0b0f17] border border-[#1f293d] rounded-xl px-3 py-2 text-white font-medium focus:outline-none focus:border-amber-400/50"
                 />
               </div>
 
               <div>
-                <label className="text-neutral-300 font-semibold block mb-1">
+                <label className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold block mb-1">
                   Target Amount (₹)
                 </label>
                 <input
                   type="number"
                   value={savingsGoalTarget}
                   onChange={(e) => setSavingsGoalTarget(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-white font-bold tabular-nums focus:outline-none"
+                  className="w-full bg-[#0b0f17] border border-[#1f293d] rounded-xl px-3 py-2 text-white font-mono font-bold tabular-nums focus:outline-none focus:border-amber-400/50"
                 />
               </div>
 
               <div>
-                <label className="text-neutral-300 font-semibold block mb-1">
+                <label className="text-[10px] uppercase font-mono tracking-wider text-slate-400 font-semibold block mb-1">
                   Next Expected Income Date (Optional)
                 </label>
                 <input
                   type="date"
                   value={nextIncomeDate}
                   onChange={(e) => setNextIncomeDate(e.target.value)}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none"
+                  className="w-full bg-[#0b0f17] border border-[#1f293d] rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-amber-400/50"
                 />
               </div>
             </div>
@@ -255,14 +255,14 @@ export const OnboardingModal: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="py-2.5 px-4 rounded-xl bg-neutral-800 text-neutral-300 font-semibold text-xs"
+                className="py-2.5 px-4 rounded-xl bg-[#161e2e] border border-[#1f293d] text-slate-300 font-mono font-medium text-xs hover:text-white"
               >
                 Back
               </button>
               <button
                 type="button"
                 onClick={() => handleFinishOnboarding(false)}
-                className="flex-1 py-2.5 rounded-xl bg-emerald-500 text-neutral-950 font-bold text-xs flex items-center justify-center gap-1 shadow-md shadow-emerald-500/20"
+                className="flex-1 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs flex items-center justify-center gap-1 shadow-md shadow-amber-400/20 active:scale-[0.98] transition-all"
               >
                 <span>Complete Setup</span>
                 <CheckCircle2 className="w-3.5 h-3.5" />

@@ -1,0 +1,161 @@
+{
+  "options": [
+    {
+      "id": "assigned-direction",
+      "kind": "assigned",
+      "label": "The Precision Manifest",
+      "kicker": "THE ROLL",
+      "lineage": "Indian railway manifest & public sector accounting roster",
+      "thesis": "High-density precision accounting with tabular paisa clarity and live split-flap allowance flips.",
+      "palette": [
+        "#0b0f17",
+        "#161e2e",
+        "#f8fafc",
+        "#f59e0b",
+        "#10b981"
+      ],
+      "materials": [
+        "matte midnight enamel",
+        "tabular numerals",
+        "ruled dividers"
+      ],
+      "viewport": "Mobile PWA viewport: top status header with live unencumbered cash ₹12,450.00, dynamic daily allowance ₹415/day, quick UPI SMS parser pill, and dense transaction log.",
+      "risk": "Utilitarian density demands strict typographic discipline to avoid looking bureaucratic.",
+      "raised": [
+        "Split-flap concourse: kinetic digit flip transitions on daily allowance & live balance",
+        "Midnight transit diagram: vibrant jewel category accents on deep midnight ground"
+      ],
+      "html": ".impeccable/mocks/decision/assigned-direction.html",
+      "htmlFrame": "390x844",
+      "comp": ".impeccable/mocks/decision/assigned-direction.webp"
+    },
+    {
+      "id": "model-pick",
+      "kind": "pick",
+      "label": "The Campus Passbook",
+      "kicker": "IMPECCABLE’S PICK",
+      "lineage": "Student accounts register & college passbook",
+      "thesis": "Warm tactile ledger sheets with crisp ruled rows for hostel rent, tapri chai, and mess dues.",
+      "palette": [
+        "#fdfbf7",
+        "#1e293b",
+        "#4338ca",
+        "#059669",
+        "#dc2626"
+      ],
+      "materials": [
+        "uncoated vellum",
+        "ruled indigo rules",
+        "rubber-stamp status seals"
+      ],
+      "viewport": "Clean paper-toned mobile view: daily allowance card framed like a student coupon, ledger transaction feed, and tapri quick-presets.",
+      "risk": "Also the direction most runs in this category land on; feels light and nostalgic rather than high-octane fintech.",
+      "html": ".impeccable/mocks/decision/model-pick.html",
+      "htmlFrame": "390x844",
+      "comp": ".impeccable/mocks/decision/model-pick.webp"
+    },
+    {
+      "id": "challenger-split-flap",
+      "kind": "challenger",
+      "catalogId": "signals-instruments-split-flap-concourse",
+      "label": "Concourse Split-Flap",
+      "verdict": "competitive",
+      "lineage": "Rail concourse departure board",
+      "thesis": "The financial state as a live departure board: ticker cells, amber alerts, and rhythmic flip updates.",
+      "palette": [
+        "#121316",
+        "#1c1e24",
+        "#ffffff",
+        "#f59e0b",
+        "#ef4444"
+      ],
+      "materials": [
+        "matte black flaps",
+        "stamped numerals",
+        "brushed aluminum borders"
+      ],
+      "viewport": "High-contrast ticker board showing daily spending burn, countdown to stipend, and time-stamped expense tiles.",
+      "case": "Fuses cleanly with live allowance calculation and fast expense feeds; gives visceral physical weight to numbers.",
+      "risk": "Mechanical flip aesthetic can feel overly retro if not balanced with modern mobile touch ergonomics.",
+      "html": ".impeccable/mocks/decision/challenger-split-flap.html",
+      "htmlFrame": "390x844",
+      "comp": ".impeccable/mocks/decision/challenger-split-flap.webp",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-split-flap-concourse-hero.webp"
+    },
+    {
+      "id": "challenger-midnight-transit",
+      "kind": "challenger",
+      "catalogId": "wayfinding-cartography-signage-midnight-transit-diagram",
+      "label": "Midnight Transit Diagram",
+      "verdict": "declined",
+      "lineage": "metropolitan rail map enamel mural",
+      "palette": [
+        "#0a1128",
+        "#f4f6fa",
+        "#e63946",
+        "#3a86ff",
+        "#06d6a0"
+      ],
+      "materials": [
+        "porcelain enamel",
+        "vector transit lines"
+      ],
+      "case": "Fuses poorly: line-routing geometry overcomplicates daily financial entry.",
+      "kept": "Vivid category color discipline against midnight blue.",
+      "hero": "https://impeccable.style/worlds/cards/wayfinding-cartography-signage-midnight-transit-diagram-hero.webp"
+    },
+    {
+      "id": "challenger-lexicon",
+      "kind": "challenger",
+      "catalogId": "rw-lexicon-shoulder-and-plate",
+      "label": "Lexicon Shoulder & Plate",
+      "verdict": "declined",
+      "lineage": "19th century lexicon & encyclopedia",
+      "palette": [
+        "#1f1c18",
+        "#fcf9f2",
+        "#8b0000"
+      ],
+      "materials": [
+        "engraved plate",
+        "book cloth"
+      ],
+      "case": "Fuses poorly: encyclopedic layout too heavy for instant UPI expense entry.",
+      "kept": "Compact shoulder margins for status badges and dates.",
+      "hero": "https://impeccable.style/worlds/cards/rw-lexicon-shoulder-and-plate-hero.webp"
+    }
+  ],
+  "reroll": {
+    "registers": [
+      "safer",
+      "bolder"
+    ]
+  },
+  "buildPath": {
+    "value": "code",
+    "toggle": true
+  },
+  "canon": true,
+  "canonCard": {
+    "kind": "canon",
+    "label": "Fintech Dark Cards",
+    "thesis": "Modern mobile banking standard: dark card surfaces, pill chips, and neon accents.",
+    "palette": [
+      "#0f172a",
+      "#1e293b",
+      "#38bdf8",
+      "#4ade80",
+      "#f8fafc"
+    ],
+    "materials": [
+      "rounded glass cards",
+      "clean system sans"
+    ],
+    "viewport": "Standard card-based banking dashboard with quick action pills and balance hero.",
+    "risk": "Familiar and functional, but visually generic across contemporary fintech apps.",
+    "html": ".impeccable/mocks/decision/canon.html",
+    "htmlFrame": "390x844",
+    "comp": ".impeccable/mocks/decision/canon.webp"
+  },
+  "steer": true
+}
