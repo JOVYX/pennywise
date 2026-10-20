@@ -7,18 +7,19 @@
 ## 📱 Features & Highlights
 
 - **⚡ Lightning-Fast Expense Logging**: Record daily expenses in seconds with quick-select student presets (*Campus Tapri, Canteen, Mess Bill, Blinkit, Metro Recharge, Swiggy*).
-- **📋 Indian Bank SMS & UPI Auto-Fill**:
-  - Automatically parse debit/credit alert messages from HDFC, SBI, ICICI, Axis, Paytm, PhonePe, Google Pay, and CRED.
-  - Extracts exact paise amount, merchant name, payment method, date, and intelligently auto-categorizes the expense in 1 tap.
+- **📋 Bank SMS & UPI Alert Parser**:
+  - Paste a bank SMS or UPI alert message and Pennywise parses it (supports debit/credit alerts from HDFC, SBI, ICICI, Axis, Paytm, PhonePe, Google Pay, and CRED).
+  - *Browser transparency*: Web browsers cannot automatically read incoming device SMS messages. You simply copy-paste your SMS alert, and Pennywise extracts the exact paise amount, merchant name, payment method, date, and auto-categorizes the expense in 1 tap.
 - **🤝 Roommate & Friend Bill Splitter**:
   - Splitwise-style group bill splitter built for flatmates and campus trips.
   - Split expenses **equally**, **by shares**, or with **exact custom amounts** with guaranteed zero-loss paisa rounding.
   - Automatically creates personal debt/IOU records into IndexedDB and logs your share.
   - Generates WhatsApp-ready formatted breakdown text for instant group chat sharing.
-- **🔒 App Lock & Privacy (PIN + Face ID)**:
-  - Secure 4-digit passcode lock with SHA-256 hashing.
-  - WebAuthn Biometric unlock support (Face ID / Touch ID / Fingerprint).
+- **🔒 App Lock Privacy Screen (PIN + Face ID)**:
+  - Convenient 4-digit passcode privacy screen to prevent shoulder-surfing and casual snooping.
+  - WebAuthn biometric unlock support (Face ID / Touch ID / Fingerprint) when accessed over a secure HTTPS connection.
   - Configurable auto-lock delay (Immediate, 1 min, 5 min, 15 min) and brute-force lockout protection.
+  - *Important security note*: App Lock is a UI privacy screen, **not** encryption. Data stored within your device's IndexedDB is not encrypted.
 - **🇮🇳 Built for Indian Financial Life**:
   - Default currency in Indian Rupees (**INR ₹**) with standard Indian grouping (*₹1,25,000* Lakhs & Crores formatting).
   - Exact integer **paise** storage to eliminate JavaScript floating-point rounding quirks.
@@ -40,8 +41,27 @@
 - **🔒 Privacy & Local-First**:
   - Stored purely inside your device's browser via **IndexedDB (Dexie.js)**.
   - Zero telemetry, zero analytics, zero external API keys, zero tracking.
+  - Note: IndexedDB data is unencrypted on device storage; App Lock acts as a client-side privacy screen.
   - Full JSON backup export & schema-validated restore.
   - Spreadsheet CSV export.
+
+---
+
+## ⚠️ Known Limitations
+
+1. **iOS PWA Storage Partitioning**:
+   - Adding Pennywise to your iPhone Home Screen creates an isolated standalone web app container.
+   - iOS Safari keeps this storage completely separate from regular Safari browser tabs. Data entered in Safari does not automatically appear in the Home Screen app and vice versa.
+   - When transitioning between Safari and your Home Screen app, use **Settings → Export JSON** in Safari, then **Settings → Restore from Backup** in the installed app.
+2. **Safari Storage Eviction Risk**:
+   - On iOS, WebKit applies a 7-day storage eviction rule for web applications without user interaction. If you don't open the app for an extended period or if device storage runs critically low, WebKit may evict client-side IndexedDB databases and cached files.
+   - Pennywise requests persistent storage (`navigator.storage.persist()`), but regularly exporting a JSON backup to iCloud Drive or the iOS Files app is strongly recommended.
+3. **No Automatic SMS Inbox Access**:
+   - Web browsers (unlike native Android apps with SMS permissions) cannot passively read incoming SMS alerts in the background. You must copy and paste SMS alerts into the parser.
+4. **No Cloud Sync or Multi-Device Sync**:
+   - Pennywise has no central server, backend database, or cloud sync. Your data exists only inside the browser where it was recorded. If you switch devices or reset your browser without a backup, your data cannot be recovered remotely.
+5. **HTTPS Requirement for PWA & Biometrics**:
+   - Service Workers (offline caching, PWA installation) and WebAuthn (Face ID / Touch ID) strictly require a secure context (`https://` or `localhost`). Testing over plain HTTP LAN addresses (e.g. `http://192.168.x.x:5173`) will disable both features.
 
 ---
 
@@ -89,34 +109,32 @@ npm run preview -- --host
 
 ## 📲 Testing & Installing on iPhone
 
-Since iOS Safari restricts Service Workers and camera/PWA capabilities over non-secure connections, follow these exact instructions to test or install Pennywise on your iPhone:
+Since iOS Safari restricts Service Workers, offline caching, and WebAuthn (Face ID / Touch ID) over non-secure connections, follow these exact instructions to test or install Pennywise on your iPhone:
 
-### Option A: Local Wi-Fi Testing (Same LAN)
+> **Important: Network & Context Constraints**
+> - **Service Workers** work on `localhost` and **HTTPS only**. They will **not** register over plain HTTP LAN addresses (`http://192.168.x.x`).
+> - **Face ID / WebAuthn** strictly requires a secure context (**HTTPS**). It is completely unavailable over `http://192.168.x.x`.
+
+### Option A: Local Wi-Fi Testing (Same LAN via Secure Tunnel)
 1. Ensure your iPhone and your Arch Linux laptop are connected to the same Wi-Fi network.
-2. Run the preview or dev server with host enabled:
+2. Run the dev server:
    ```bash
-   npm run dev -- --host
+   npm run dev
    ```
-3. Look at the terminal output for the Network address:
+3. In a second terminal, open a secure HTTPS tunnel using `cloudflared`:
+   ```bash
+   npx cloudflared tunnel --url http://localhost:5173
    ```
-   ➜  Network: http://192.168.1.XX:5173/
-   ```
-4. On your iPhone, open **Safari** and enter that URL (`http://192.168.1.XX:5173/`).
-
-> **Note on Service Worker / HTTPS**:
-> iOS Safari requires **HTTPS** for full PWA Home Screen caching. For local HTTPS testing, you can use a tunnel tool such as `cloudflared` or `ngrok`:
-> ```bash
-> # Example using Cloudflare Tunnels (Zero install / instant HTTPS):
-> npx cloudflared tunnel --url http://localhost:5173
-> ```
-> Cloudflare will print a secure `https://....trycloudflare.com` URL that can be opened directly on your iPhone Safari!
+4. Cloudflare will output an `https://....trycloudflare.com` URL. Open that secure HTTPS link in Safari on your iPhone.
+5. Service Workers, offline caching, and WebAuthn Face ID unlock will all work properly!
 
 ### Option B: Adding to iPhone Home Screen
-1. Open Pennywise in **Safari** on your iPhone.
+1. Open Pennywise in **Safari** on your iPhone via HTTPS (your tunnel or production URL).
 2. Tap the **Share** button (the square with an upward arrow in Safari's bottom toolbar).
 3. Scroll down the share sheet and tap **Add to Home Screen**.
 4. Confirm the title **Pennywise** and tap **Add** in the top-right corner.
 5. The Pennywise icon will appear on your iOS Home Screen. When opened from the Home Screen, it runs in **standalone mode** without the Safari address bar, styled with safe area notches and iPhone-native touch interactions.
+6. *Note*: Standalone Home Screen apps use an isolated storage partition separate from Safari. If you started entering data in Safari, export a JSON backup and restore it inside the Home Screen app.
 
 ---
 

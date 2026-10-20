@@ -225,7 +225,7 @@ export const TransactionModal: React.FC = () => {
                 <span>Paste Bank / UPI SMS Alert</span>
               </div>
               <span className="mono text-[10px] px-2 py-0.5 rounded bg-[#111827] text-amber-400 font-bold border border-[#1f293d]">
-                AUTO-FILL
+                PARSE SMS
               </span>
             </button>
 

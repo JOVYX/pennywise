@@ -314,9 +314,9 @@ export const SettingsView: React.FC = () => {
             </div>
             <div>
               <h3 className="mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                APP LOCK & SECURITY
+                APP LOCK & PRIVACY SCREEN
               </h3>
-              <p className="text-[11px] text-slate-400">Protect financial records with PIN & Biometrics</p>
+              <p className="text-[11px] text-slate-400">UI privacy screen (IndexedDB storage is unencrypted)</p>
             </div>
           </div>
         </div>
@@ -521,8 +521,8 @@ export const SettingsView: React.FC = () => {
         </div>
         <p className="text-xs text-slate-400 leading-relaxed">
           Pennywise is strictly client-side. All accounts, expenses, and plans reside solely
-          inside your iPhone Safari browser via IndexedDB (Dexie.js). No external APIs, telemetry,
-          or servers receive your financial records. Export periodic JSON backups to local Files or iCloud Drive.
+          inside your browser via IndexedDB (Dexie.js). No external APIs, telemetry,
+          or servers receive your financial records. IndexedDB storage is unencrypted on device storage; export periodic JSON backups to local Files or iCloud Drive.
         </p>
       </div>
 
